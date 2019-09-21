@@ -31,7 +31,7 @@ public class DumpUtility {
 
         CoPathCaseFinder cpcf = new CoPathCaseFinder(connCoPath);
         
-        System.out.println(cpcf.getCoPathCaseByAccNo("S19-123"));
+        System.out.println(cpcf.getCoPathCaseByAccNo("S13-8527"));
         
     }
     
