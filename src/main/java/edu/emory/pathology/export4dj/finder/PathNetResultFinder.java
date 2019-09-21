@@ -77,7 +77,26 @@ public class PathNetResultFinder {
           + "  left outer join ehcvw.lkp_unit_measure lum on (lum.unit_measure_key = frl.unit_measure_key)                                                                                                                    "
           + "  left outer join ehcvw.lkp_result_interpretation lri on (lri.result_interpretation_key = frl.result_interpretation_key)                                                                                         "
           + "order by                                                                                                                                                                                                         "
-          + "  1                                                                                                                                                                                                              "
+          + "  decode                                                                                                                                                                                                         "
+          + "  (                                                                                                                                                                                                              "
+          + "    lsrt.structured_result_type_desc,                                                                                                                                                                            "
+          + "    'Albumin Level', 1,                                                                                                                                                                                          "
+          + "    'Beta 2 Microglobulin Level', 2,                                                                                                                                                                             "
+          + "    'Calcium Level Total', 3,                                                                                                                                                                                    "
+          + "    'Creatinine', 4,                                                                                                                                                                                             "
+          + "    'Free Kappa', 5,                                                                                                                                                                                             "
+          + "    'Free Lambda', 6,                                                                                                                                                                                            "
+          + "    'Immunoglobulin IgA Level', 7,                                                                                                                                                                               "
+          + "    'Immunoglobulin IgG Level Total', 8,                                                                                                                                                                         "
+          + "    'Immunoglobulin IgM Level Total', 9,                                                                                                                                                                         "
+          + "    'Lactate Dehydrogenase', 10,                                                                                                                                                                                 "
+          + "    'Paraprotein Concentration', 11,                                                                                                                                                                             "
+          + "    'SPEINTERP', 12,                                                                                                                                                                                             "
+          + "    'Immunfixation Interpretation', 13,                                                                                                                                                                          "
+          + "    'Paraprotein/24 hours', 14,                                                                                                                                                                                  "
+          + "    'Urine Immunoelectrophoresis Interp', 15,                                                                                                                                                                    "
+          + "    'Urine Immunofixation Interp', 16                                                                                                                                                                            "
+          + "  )                                                                                                                                                                                                              "
         );       
     }
 
@@ -94,7 +113,6 @@ public class PathNetResultFinder {
             pathNetResults.add(new PathNetResult(rs1));
         }
         rs1.close();
-        pstmt1.close();
         return pathNetResults;
     }
     

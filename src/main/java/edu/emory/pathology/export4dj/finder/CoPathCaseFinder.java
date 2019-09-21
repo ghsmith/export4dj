@@ -64,7 +64,6 @@ public class CoPathCaseFinder {
                 coPathCase.procedures.add(new CoPathProcedure(rs2));
             }
             rs2.close();
-            pstmt2.close();
             coPathCase.pathNetResults = pathNetResultFinder.getPathNetResultsByEmpiProximateToCollectionDate(coPathCase.empi, coPathCase.collectionDate);
             coPathCase.procedureMap = new HashMap<>();
             for(CoPathProcedure coPathProcedure : coPathCase.procedures) {
@@ -76,7 +75,6 @@ public class CoPathCaseFinder {
             }
         }
         rs1.close();
-        pstmt1.close();
         return coPathCase;
     }
     

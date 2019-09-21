@@ -57,29 +57,53 @@ public class CoPathCase {
             .replaceAll("\\s+$", "");
     }
 
+    public static String toStringHeader() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
+            "accNo",
+            "accDate",
+            "collDate",
+            "empi",
+            "finalDiag",
+            "flowInterp",
+            "chromInterp",
+            "fishInterp"
+        ));
+        for(int x = 1; x <= 20; x++) {
+            sb.append(String.format(",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
+                String.format("resultName-%02d", x),
+                String.format("collectionDateDelta-%02d", x),
+                String.format("value-%02d", x),
+                String.format("uom-%02d", x),
+                String.format("flag-%02d", x),
+                String.format("interp-%02d", x)
+            ));
+        }
+        return(sb.toString());
+    }
+    
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append(String.format(
-            "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
-            specimenId.replace("'", "\""),
+            "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
             accNo.replace("'", "\""),
             sdf.format(accessionDate),
             sdf.format(collectionDate),
             empi.replace("'", "\""),
-            finalDiagnosis.replace("'", "\""),
-            procedureMap.get("Flow Cytometry").interp,
-            procedureMap.get("Chromosome Analysis").interp,
-            procedureMap.get("Multiple Myeloma Panel, FISH").interp
+            finalDiagnosis == null ? "" : finalDiagnosis.replace("'", "\""),
+            procedureMap.get("Flow Cytometry") == null || procedureMap.get("Flow Cytometry").interp == null ? "" : procedureMap.get("Flow Cytometry").interp,
+            procedureMap.get("Chromosome Analysis") == null || procedureMap.get("Chromosome Analysis").interp == null ? "" : procedureMap.get("Chromosome Analysis").interp,
+            procedureMap.get("Multiple Myeloma Panel, FISH") == null || procedureMap.get("Multiple Myeloma Panel, FISH").interp == null ? "" : procedureMap.get("Multiple Myeloma Panel, FISH").interp
         ));
         for(PathNetResult pathNetResult : pathNetResults) {
             sb.append(String.format(",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
-                pathNetResult.resultName,
-                pathNetResult.collectionDateDelta,
-                pathNetResult.value,
-                pathNetResult.uom,
-                pathNetResult.flag,
-                pathNetResult.interp
+                pathNetResult.resultName.replace("'", "\""),
+                pathNetResult.collectionDateDelta == null ? "" : pathNetResult.collectionDateDelta.toString(),
+                pathNetResult.value == null ? "" : pathNetResult.value.replace("'", "\""),
+                pathNetResult.uom == null ? "" : pathNetResult.uom.replace("'", "\""),
+                pathNetResult.flag == null ? "" : pathNetResult.flag.replace("'", "\""),
+                pathNetResult.interp == null ? "" : pathNetResult.interp.replace("'", "\"")
             ));
         }
         return(sb.toString());
