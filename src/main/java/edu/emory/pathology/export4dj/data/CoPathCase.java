@@ -6,21 +6,33 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
  * @author Geofrey H. Smith
  */
+@XmlRootElement
 public class CoPathCase {
     
+    @XmlRootElement
     public static class CoPathProcedure {
-        
+    
+        @XmlAttribute
         public String procName;
+        //@XmlAttribute
         public String interp;
+
+        public CoPathProcedure() {
+        }
 
         public CoPathProcedure(ResultSet rs) throws SQLException {
             this.procName = rs.getString("proc_name");
-            this.interp = rs.getString("procint_text")
+            this.interp = rs.getString("procint_text") == null ? null : rs.getString("procint_text")
                 .replace("\u0008", "") // there are ASCII 08 (backspace?) characters in this column
                 .replace("\u00a0", " ") // thar are ASCII A0 (non-breaking space) characaters in this column
                 .replace("\u00b7", " ") // thar are ASCII B7 (dot) characaters in this column
@@ -33,15 +45,29 @@ public class CoPathCase {
     SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy"); 
     
     public String specimenId;
+    @XmlAttribute
     public String accNo;
+    @XmlTransient
     public Date accessionDate;
+    @XmlTransient
     public Date collectionDate;
+    @XmlAttribute
     public String empi;
+    //@XmlAttribute
     public String finalDiagnosis;
+    @XmlElementWrapper(name = "procedures")
+    @XmlElement(name = "procedure")
     public List<CoPathProcedure> procedures;
+    @XmlTransient
     public Map<String, CoPathProcedure> procedureMap;
+    @XmlElementWrapper(name = "pathNetResults")
+    @XmlElement(name = "pathNetResult")
     public List<PathNetResult> pathNetResults;
+    @XmlTransient
     public Map<String, PathNetResult> pathNetResultMap;
+
+    public CoPathCase() {
+    }
 
     public CoPathCase(ResultSet rs) throws SQLException {
         this.specimenId = rs.getString("specimen_id");
@@ -49,7 +75,7 @@ public class CoPathCase {
         this.accessionDate = rs.getDate("accession_date");
         this.collectionDate = rs.getDate("datetime_taken");
         this.empi = rs.getString("universal_mednum_stripped");
-        this.finalDiagnosis = rs.getString("final_text")
+        this.finalDiagnosis = rs.getString("final_text") == null ? null : rs.getString("final_text")
             .replace("\u0008", "") // there are ASCII 08 (backspace?) characters in this column
             .replace("\u00a0", " ") // thar are ASCII A0 (non-breaking space) characaters in this column
             .replace("\u00b7", " ") // thar are ASCII B7 (dot) characaters in this column
@@ -107,6 +133,15 @@ public class CoPathCase {
             ));
         }
         return(sb.toString());
+    }
+
+    @XmlAttribute
+    public String getAccessionDate() {
+        return sdf.format(accessionDate);
+    }
+    @XmlAttribute
+    public String getCollectionDate() {
+        return sdf.format(collectionDate);
     }
     
 }
