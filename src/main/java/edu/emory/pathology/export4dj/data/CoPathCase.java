@@ -40,6 +40,8 @@ public class CoPathCase {
     public String finalDiagnosis;
     public List<CoPathProcedure> procedures;
     public Map<String, CoPathProcedure> procedureMap;
+    public List<PathNetResult> pathNetResults;
+    public Map<String, PathNetResult> pathNetResultMap;
 
     public CoPathCase(ResultSet rs) throws SQLException {
         this.specimenId = rs.getString("specimen_id");
@@ -57,7 +59,8 @@ public class CoPathCase {
 
     @Override
     public String toString() {
-        return(String.format(
+        StringBuffer sb = new StringBuffer();
+        sb.append(String.format(
             "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
             specimenId.replace("'", "\""),
             accNo.replace("'", "\""),
@@ -69,6 +72,17 @@ public class CoPathCase {
             procedureMap.get("Chromosome Analysis").interp,
             procedureMap.get("Multiple Myeloma Panel, FISH").interp
         ));
+        for(PathNetResult pathNetResult : pathNetResults) {
+            sb.append(String.format(",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
+                pathNetResult.resultName,
+                pathNetResult.collectionDateDelta,
+                pathNetResult.value,
+                pathNetResult.uom,
+                pathNetResult.flag,
+                pathNetResult.interp
+            ));
+        }
+        return(sb.toString());
     }
     
 }

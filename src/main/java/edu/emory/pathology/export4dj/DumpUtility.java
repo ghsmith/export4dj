@@ -1,6 +1,7 @@
 package edu.emory.pathology.export4dj;
 
 import edu.emory.pathology.export4dj.finder.CoPathCaseFinder;
+import edu.emory.pathology.export4dj.finder.PathNetResultFinder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -30,8 +31,9 @@ public class DumpUtility {
         Connection connCoPath = DriverManager.getConnection(priv.getProperty("connCoPath.url"));
 
         CoPathCaseFinder cpcf = new CoPathCaseFinder(connCoPath);
+        PathNetResultFinder pnrf = new PathNetResultFinder(connCdw);
         
-        System.out.println(cpcf.getCoPathCaseByAccNo("S13-8527"));
+        System.out.println(cpcf.getCoPathCaseByAccNo("S13-8527", pnrf));
         
     }
     
