@@ -40,7 +40,8 @@ public class PathNetResult {
                 .replace("\u00b7", " ") // thar are ASCII B7 (dot) characaters in this column
                 .replace("\r", "")
                 .replaceAll("(?m)\\s+$", "")
-                .replaceAll("(?m)^", "");
+                .replaceAll("(?m)^", "")
+                .replaceAll("^\n", "");
         }
     }
     
