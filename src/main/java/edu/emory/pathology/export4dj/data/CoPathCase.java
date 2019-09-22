@@ -113,23 +113,23 @@ public class CoPathCase {
         StringBuffer sb = new StringBuffer();
         sb.append(String.format(
             "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
-            accNo.replace("'", "\""),
+            accNo.replace("\"", "'"),
             sdf.format(accessionDate),
             sdf.format(collectionDate),
-            empi.replace("'", "\""),
-            finalDiagnosis == null ? "" : finalDiagnosis.replace("'", "\""),
-            procedureMap.get("Flow Cytometry") == null || procedureMap.get("Flow Cytometry").interp == null ? "" : procedureMap.get("Flow Cytometry").interp,
-            procedureMap.get("Chromosome Analysis") == null || procedureMap.get("Chromosome Analysis").interp == null ? "" : procedureMap.get("Chromosome Analysis").interp,
-            procedureMap.get("Multiple Myeloma Panel, FISH") == null || procedureMap.get("Multiple Myeloma Panel, FISH").interp == null ? "" : procedureMap.get("Multiple Myeloma Panel, FISH").interp
+            empi.replace("\"", "'"),
+            finalDiagnosis == null ? "" : finalDiagnosis.replace("\"", "'"),
+            procedureMap.get("Flow Cytometry") == null || procedureMap.get("Flow Cytometry").interp == null ? "" : procedureMap.get("Flow Cytometry").interp.replace("\"", "'"),
+            procedureMap.get("Chromosome Analysis") == null || procedureMap.get("Chromosome Analysis").interp == null ? "" : procedureMap.get("Chromosome Analysis").interp.replace("\"", "'"),
+            procedureMap.get("Multiple Myeloma Panel, FISH") == null || procedureMap.get("Multiple Myeloma Panel, FISH").interp == null ? "" : procedureMap.get("Multiple Myeloma Panel, FISH").interp.replace("\"", "'")
         ));
         for(PathNetResult pathNetResult : pathNetResults) {
             sb.append(String.format(",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
-                pathNetResult.resultName.replace("'", "\""),
+                pathNetResult.resultName.replace("\"", "'"),
                 pathNetResult.collectionDateDelta == null ? "" : pathNetResult.collectionDateDelta.toString(),
-                pathNetResult.value == null ? "" : pathNetResult.value.replace("'", "\""),
-                pathNetResult.uom == null ? "" : pathNetResult.uom.replace("'", "\""),
-                pathNetResult.flag == null ? "" : pathNetResult.flag.replace("'", "\""),
-                pathNetResult.interp == null ? "" : pathNetResult.interp.replace("'", "\"")
+                pathNetResult.value == null ? "" : pathNetResult.value.replace("\"", "'"),
+                pathNetResult.uom == null ? "" : pathNetResult.uom.replace("\"", "'"),
+                pathNetResult.flag == null ? "" : pathNetResult.flag.replace("\"", "'"),
+                pathNetResult.interp == null ? "" : pathNetResult.interp.replace("\"", "'")
             ));
         }
         return(sb.toString());

@@ -100,19 +100,25 @@ public class PathNetResultFinder {
         );       
     }
 
-    public List<PathNetResult> getPathNetResultsByEmpiProximateToCollectionDate(String empi, Date collectionDate) throws SQLException {
+    public List<PathNetResult> getPathNetResultsByEmpiProximateToCollectionDate(String empi, Date collectionDate) {
         List<PathNetResult> pathNetResults = new ArrayList<>();
-        pstmt1.setDate(1, collectionDate);
-        pstmt1.setDate(2, collectionDate);
-        pstmt1.setString(3, empi);
-        pstmt1.setDate(4, collectionDate);
-        pstmt1.setDate(5, collectionDate);
-        pstmt1.setDate(6, collectionDate);
-        ResultSet rs1 = pstmt1.executeQuery();
-        while(rs1.next()) {
-            pathNetResults.add(new PathNetResult(rs1));
+        try {
+            pstmt1.setDate(1, collectionDate);
+            pstmt1.setDate(2, collectionDate);
+            pstmt1.setString(3, empi);
+            pstmt1.setDate(4, collectionDate);
+            pstmt1.setDate(5, collectionDate);
+            pstmt1.setDate(6, collectionDate);
+            ResultSet rs1 = pstmt1.executeQuery();
+            while(rs1.next()) {
+                pathNetResults.add(new PathNetResult(rs1));
+            }
+            rs1.close();
         }
-        rs1.close();
+        catch(SQLException e) {
+            System.out.println(String.format("error getting resutls for EMPI %s and collection date %s", empi, collectionDate));
+            e.printStackTrace();
+        }
         return pathNetResults;
     }
     

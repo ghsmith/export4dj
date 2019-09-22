@@ -39,7 +39,8 @@ public class PathNetResult {
                 .replace("\u00a0", " ") // thar are ASCII A0 (non-breaking space) characaters in this column
                 .replace("\u00b7", " ") // thar are ASCII B7 (dot) characaters in this column
                 .replace("\r", "")
-                .replaceAll("\\s+$", "");
+                .replaceAll("(?m)\\s+$", "")
+                .replaceAll("(?m)^", "");
         }
     }
     
