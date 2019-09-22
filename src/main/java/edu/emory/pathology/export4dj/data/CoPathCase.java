@@ -24,7 +24,6 @@ public class CoPathCase {
     
         @XmlAttribute
         public String procName;
-        //@XmlAttribute
         public String interp;
 
         public CoPathProcedure() {
@@ -53,8 +52,8 @@ public class CoPathCase {
     public Date collectionDate;
     @XmlAttribute
     public String empi;
-    //@XmlAttribute
     public String finalDiagnosis;
+    public String karyotype;
     @XmlElementWrapper(name = "procedures")
     @XmlElement(name = "procedure")
     public List<CoPathProcedure> procedures;
@@ -81,16 +80,23 @@ public class CoPathCase {
             .replace("\u00b7", " ") // thar are ASCII B7 (dot) characaters in this column
             .replace("\r", "")
             .replaceAll("\\s+$", "");
+        this.karyotype = rs.getString("karyotype") == null ? null : rs.getString("karyotype")
+            .replace("\u0008", "") // there are ASCII 08 (backspace?) characters in this column
+            .replace("\u00a0", " ") // thar are ASCII A0 (non-breaking space) characaters in this column
+            .replace("\u00b7", " ") // thar are ASCII B7 (dot) characaters in this column
+            .replace("\r", "")
+            .replaceAll("\\s+$", "");
     }
 
     public static String toStringHeader() {
         StringBuffer sb = new StringBuffer();
-        sb.append(String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
+        sb.append(String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
             "accNo",
             "accDate",
             "collDate",
             "empi",
             "finalDiag",
+            "karyotype",
             "flowInterp",
             "chromInterp",
             "fishInterp"
@@ -112,12 +118,13 @@ public class CoPathCase {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append(String.format(
-            "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
+            "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
             accNo.replace("\"", "'"),
             sdf.format(accessionDate),
             sdf.format(collectionDate),
             empi.replace("\"", "'"),
             finalDiagnosis == null ? "" : finalDiagnosis.replace("\"", "'"),
+            karyotype == null ? "" : karyotype.replace("\"", "'"),
             procedureMap.get("Flow Cytometry") == null || procedureMap.get("Flow Cytometry").interp == null ? "" : procedureMap.get("Flow Cytometry").interp.replace("\"", "'"),
             procedureMap.get("Chromosome Analysis") == null || procedureMap.get("Chromosome Analysis").interp == null ? "" : procedureMap.get("Chromosome Analysis").interp.replace("\"", "'"),
             procedureMap.get("Multiple Myeloma Panel, FISH") == null || procedureMap.get("Multiple Myeloma Panel, FISH").interp == null ? "" : procedureMap.get("Multiple Myeloma Panel, FISH").interp.replace("\"", "'")
