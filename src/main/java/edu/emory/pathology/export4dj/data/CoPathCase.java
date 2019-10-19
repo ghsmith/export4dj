@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -41,8 +42,70 @@ public class CoPathCase {
         
     }
 
+    @XmlRootElement
+    public static class FishProbe {
+    
+        @XmlAttribute
+        public Integer probeNumber;
+        @XmlAttribute
+        public String probeName;
+        @XmlAttribute
+        public Boolean structuralAbn;
+        @XmlAttribute
+        public Boolean copyNumberAbn;
+        @XmlAttribute
+        public Boolean amplificationAbn;
+        @XmlAttribute
+        public Boolean otherAbn;
+        @XmlAttribute
+        public String otherAbnName;
+
+        public FishProbe() {
+        }
+
+        public FishProbe(ResultSet rs) throws SQLException {
+            this.probeNumber = rs.getInt("probe_no");
+            this.probeName = rs.getString("val_name");
+        }
+        
+        public void setVariationProperties(ResultSet rs) throws SQLException {
+            if(rs.getString("val").matches(".*RR[0-9]Positive")) {
+                structuralAbn = true;
+            }
+            else if(rs.getString("val").matches(".*CN[0-9]Positive")) {
+                copyNumberAbn = true;
+            }
+            else if(rs.getString("val").matches(".*AR[0-9]Positive")) {
+                amplificationAbn = true;
+            }
+            else if(rs.getString("val").matches(".*OR[0-9]Positive")) {
+                otherAbn = true;
+                otherAbnName = rs.getString("val_freetext_char");
+            }
+        }
+        
+        public String getVariationConcatenated() {
+            List<String> vc = new ArrayList<>();
+            if(structuralAbn != null && structuralAbn) {
+                vc.add("struct");
+            }
+            if(copyNumberAbn != null && copyNumberAbn) {
+                vc.add("CNA");
+            }
+            if(amplificationAbn != null && amplificationAbn) {
+                vc.add("amp");
+            }
+            if(otherAbn != null && otherAbn) {
+                vc.add(String.format("other[%s]", otherAbnName));
+            }
+            return String.join(",", vc);
+        }
+        
+    }
+    
     SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy"); 
     
+    @XmlTransient
     public String specimenId;
     @XmlAttribute
     public String accNo;
@@ -59,6 +122,11 @@ public class CoPathCase {
     public List<CoPathProcedure> procedures;
     @XmlTransient
     public Map<String, CoPathProcedure> procedureMap;
+    @XmlElementWrapper(name = "fishProbes")
+    @XmlElement(name = "fishProbe")
+    public List<FishProbe> fishProbes;
+    @XmlTransient
+    public Map<Integer, FishProbe> fishProbeMap;
     @XmlElementWrapper(name = "pathNetResults")
     @XmlElement(name = "pathNetResult")
     public List<PathNetResult> pathNetResults;
@@ -101,6 +169,12 @@ public class CoPathCase {
             "chromInterp",
             "fishInterp"
         ));
+        for(int probeNumber = 1; probeNumber <=7; probeNumber++) {
+            sb.append(String.format(",\"%s\",\"%s\"",
+                String.format("probeName-%1d", probeNumber),
+                String.format("variation-%1d", probeNumber)
+            ));
+        }
         for(int x = 1; x <= 20; x++) {
             sb.append(String.format(",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
                 String.format("resultName-%02d", x),
@@ -129,6 +203,12 @@ public class CoPathCase {
             procedureMap.get("Chromosome Analysis") == null || procedureMap.get("Chromosome Analysis").interp == null ? "" : procedureMap.get("Chromosome Analysis").interp.replace("\"", "'"),
             procedureMap.get("Multiple Myeloma Panel, FISH") == null || procedureMap.get("Multiple Myeloma Panel, FISH").interp == null ? "" : procedureMap.get("Multiple Myeloma Panel, FISH").interp.replace("\"", "'")
         ));
+        for(int probeNumber = 1; probeNumber <=7; probeNumber++) {
+            sb.append(String.format(",\"%s\",\"%s\"",
+                fishProbeMap.get(probeNumber) == null ? "" : fishProbeMap.get(probeNumber).probeName,
+                fishProbeMap.get(probeNumber) == null ? "" : fishProbeMap.get(probeNumber).getVariationConcatenated()
+            ));
+        }
         for(PathNetResult pathNetResult : pathNetResults) {
             sb.append(String.format(",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
                 pathNetResult.resultName.replace("\"", "'"),

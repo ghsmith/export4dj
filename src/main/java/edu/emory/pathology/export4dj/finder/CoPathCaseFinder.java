@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import edu.emory.pathology.export4dj.data.CoPathCase;
 import edu.emory.pathology.export4dj.data.CoPathCase.CoPathProcedure;
+import edu.emory.pathology.export4dj.data.CoPathCase.FishProbe;
 import edu.emory.pathology.export4dj.data.PathNetResult;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +20,8 @@ public class CoPathCaseFinder {
     private Connection conn;
     private PreparedStatement pstmt1;
     private PreparedStatement pstmt2;
+    private PreparedStatement pstmt3;
+    private PreparedStatement pstmt4;
 
     public CoPathCaseFinder(Connection conn) throws SQLException {
         this.conn = conn;
@@ -51,6 +54,65 @@ public class CoPathCaseFinder {
           + "order by                                                                                                                                                                 "
           + "  p_special_proc.sp_inst                                                                                                                                                 "
         );
+        pstmt3 = conn.prepareStatement(
+            "select                                                                                                   "
+          + "  cast(substring(dsc.name, charindex('(', dsc.name) + 1, 1) as int) as probe_no,                         "
+          + "  cast(ssd.inst as int) as item_no,                                                                      "
+          + "  dsc.abbr as item,                                                                                      "
+          + "  dsc.name as item_name,                                                                                 "
+          + "  dsv.abbr as val,                                                                                       "
+          + "  dsv.name as val_name,                                                                                  "
+          + "  dsv.fillin_type as val_freetext_type,                                                                  "
+          + "  ssd.fillin_char as val_freetext_char                                                                   "
+          + "from                                                                                                     "
+          + "  c_spec_synoptic_ws ssw                                                                                 "
+          + "  join c_spec_synoptic_dx ssd on(ssd.specimen_id = ssw.specimen_id and ssd.worksheet_inst = ssw.ws_inst) "
+          + "  join c_d_synoptic_value dsv on(dsv.id = ssd.synoptic_value_id)                                         "
+          + "  join c_d_synoptic_category dsc on(dsc.id = dsv.category_id)                                            "
+          + "where                                                                                                    "
+          + "  dsc.name like 'Probe Set (_)'                                                                          "
+          + "  and ssw.worksheet_id = 'temy85'                                                                        "
+          + "  and ssw.specimen_id = ?                                                                                "
+          + "order by                                                                                                 "
+          + "  2                                                                                                      "
+        );
+        pstmt4 = conn.prepareStatement(
+            "select                                                                                                   "
+          + "  cast(substring(dsc.name, charindex('(', dsc.name) + 1, 1) as int) as probe_no,                         "
+          + "  cast(ssd.inst as int) as item_no,                                                                      "
+          + "  dsc.abbr as item,                                                                                      "
+          + "  dsc.name as item_name,                                                                                 "
+          + "  dsv.abbr as val,                                                                                       "
+          + "  dsv.name as val_name,                                                                                  "
+          + "  dsv.fillin_type as val_freetext_type,                                                                  "
+          + "  ssd.fillin_char as val_freetext_char                                                                   "
+          + "from                                                                                                     "
+          + "  c_spec_synoptic_ws ssw                                                                                 "
+          + "  join c_spec_synoptic_dx ssd on(ssd.specimen_id = ssw.specimen_id and ssd.worksheet_inst = ssw.ws_inst) "
+          + "  join c_d_synoptic_value dsv on(dsv.id = ssd.synoptic_value_id)                                         "
+          + "  join c_d_synoptic_category dsc on(dsc.id = dsv.category_id)                                            "
+          + "where                                                                                                    "
+          + "  (                                                                                                      "
+          + "    (                                                                                                    "
+          + "      dsc.name like 'Rearrangement Results (_)'                                                          "
+          + "      or dsc.name like 'Copy Number Results (_)'                                                         "
+          + "      or dsc.name like 'Amplification Results (_)'                                                       "
+          + "      or dsc.name like 'Other Results (_)'                                                               "
+          + "    )                                                                                                    "
+          + "    and                                                                                                  "
+          + "    (                                                                                                    "
+          + "      dsv.abbr like 'CF[_]Misc[_]RR_Positive'                                                            "
+          + "      or dsv.abbr like 'CF[_]Misc[_]CN_Positive'                                                         "
+          + "      or dsv.abbr like 'CF[_]Misc[_]AR_Positive'                                                         "
+          + "      or dsv.abbr like 'CF[_]Misc[_]OR_Positive'                                                         "
+          + "    )                                                                                                    "
+          + "  )                                                                                                      "
+          + "  and ssw.worksheet_id = 'temy85'                                                                        "
+          + "  and ssw.specimen_id = ?                                                                                "
+          + "  and cast(substring(dsc.name, charindex('(', dsc.name) + 1, 1) as int) = ?                              "
+          + "order by                                                                                                 "
+          + "  2                                                                                                      "
+        );
     }
     
     public CoPathCase getCoPathCaseByAccNo(String accNo, PathNetResultFinder pathNetResultFinder) throws SQLException {
@@ -66,10 +128,29 @@ public class CoPathCaseFinder {
                 coPathCase.procedures.add(new CoPathProcedure(rs2));
             }
             rs2.close();
+            coPathCase.fishProbes = new ArrayList<>();
+            pstmt3.setString(1, coPathCase.specimenId);
+            ResultSet rs3 = pstmt3.executeQuery();
+            while(rs3.next()) {
+                FishProbe fishProbe = new CoPathCase.FishProbe(rs3);
+                coPathCase.fishProbes.add(fishProbe);
+                pstmt4.setString(1, coPathCase.specimenId);
+                pstmt4.setInt(2, fishProbe.probeNumber);
+                ResultSet rs4 = pstmt4.executeQuery();
+                while(rs4.next()) {
+                    fishProbe.setVariationProperties(rs4);
+                }
+                rs4.close();
+            }
+            rs3.close();
             coPathCase.pathNetResults = pathNetResultFinder.getPathNetResultsByEmpiProximateToCollectionDate(coPathCase.empi, coPathCase.collectionDate);
             coPathCase.procedureMap = new HashMap<>();
             for(CoPathProcedure coPathProcedure : coPathCase.procedures) {
                 coPathCase.procedureMap.put(coPathProcedure.procName, coPathProcedure);
+            }
+            coPathCase.fishProbeMap = new HashMap<>();
+            for(FishProbe fishProbe : coPathCase.fishProbes) {
+                coPathCase.fishProbeMap.put(fishProbe.probeNumber, fishProbe);
             }
             coPathCase.pathNetResultMap = new HashMap<>();
             for(PathNetResult pathNetResult : coPathCase.pathNetResults) {

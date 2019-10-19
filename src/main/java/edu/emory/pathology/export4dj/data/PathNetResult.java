@@ -33,7 +33,7 @@ public class PathNetResult {
         this.value = rs.getString("result_value");
         this.uom = rs.getString("result_uom");
         this.flag = rs.getString("result_flag");
-        if(this.resultName.matches(".*(?i:interp).*")) {
+        if(this.resultName.matches(".*(?i:interp).*") || this.resultName.matches("Urine Protein Electrophoresis")) {
             this.interp = rs.getString("result_narrative") == null ? null : rs.getString("result_narrative")
                 .replace("\u0008", "") // there are ASCII 08 (backspace?) characters in this column
                 .replace("\u00a0", " ") // thar are ASCII A0 (non-breaking space) characaters in this column
