@@ -115,7 +115,7 @@ public class CoPathCaseFinder {
         );
     }
     
-    public CoPathCase getCoPathCaseByAccNo(String accNo, PathNetResultFinder pathNetResultFinder) throws SQLException {
+    public CoPathCase getCoPathCaseByAccNo(String accNo, PathNetResultFinder pathNetResultFinder, SebiaCaseFinder sebiaCaseFinder) throws SQLException {
         CoPathCase coPathCase = null;
         pstmt1.setString(1, accNo);
         ResultSet rs1 = pstmt1.executeQuery();
@@ -155,6 +155,12 @@ public class CoPathCaseFinder {
             coPathCase.pathNetResultMap = new HashMap<>();
             for(PathNetResult pathNetResult : coPathCase.pathNetResults) {
                 coPathCase.pathNetResultMap.put(pathNetResult.resultName, pathNetResult);
+            }
+            if(coPathCase.pathNetResultMap.get("SPEINTERP") != null && coPathCase.pathNetResultMap.get("SPEINTERP").accNo != null) {
+                coPathCase.sebiaCaseSerum = sebiaCaseFinder.getSebiaCaseByAccNo(coPathCase.pathNetResultMap.get("SPEINTERP").accNo);
+            }
+            if(coPathCase.pathNetResultMap.get("Urine Protein Electrophoresis") != null && coPathCase.pathNetResultMap.get("Urine Protein Electrophoresis").accNo != null) {
+                coPathCase.sebiaCaseUrine = sebiaCaseFinder.getSebiaCaseByAccNo(coPathCase.pathNetResultMap.get("Urine Protein Electrophoresis").accNo);
             }
         }
         rs1.close();

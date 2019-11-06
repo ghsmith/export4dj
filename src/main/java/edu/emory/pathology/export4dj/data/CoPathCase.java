@@ -132,6 +132,8 @@ public class CoPathCase {
     public List<PathNetResult> pathNetResults;
     @XmlTransient
     public Map<String, PathNetResult> pathNetResultMap;
+    public SebiaCase sebiaCaseSerum;
+    public SebiaCase sebiaCaseUrine;
 
     public CoPathCase() {
     }
@@ -164,27 +166,33 @@ public class CoPathCase {
             "collDate",
             "empi",
             "finalDiag",
-            "karyotype",
             "flowInterp",
+            "karyotype",
             "chromInterp",
             "fishInterp"
         ));
         for(int probeNumber = 1; probeNumber <=7; probeNumber++) {
             sb.append(String.format(",\"%s\",\"%s\"",
-                String.format("probeName-%1d", probeNumber),
-                String.format("variation-%1d", probeNumber)
+                String.format("FISH%1d-probeName", probeNumber),
+                String.format("FISH%1d-variation", probeNumber)
             ));
         }
-        for(int x = 1; x <= 20; x++) {
+        for(int x = 1; x <= 25; x++) {
             sb.append(String.format(",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
-                String.format("resultName-%02d", x),
-                String.format("collectionDateDelta-%02d", x),
-                String.format("value-%02d", x),
-                String.format("uom-%02d", x),
-                String.format("flag-%02d", x),
-                String.format("interp-%02d", x)
+                String.format("rslt%02d-resultName", x),
+                String.format("rslt%02d-collectionDateDelta", x),
+                String.format("rslt%02d-value", x),
+                String.format("rslt%02d-uom", x),
+                String.format("rslt%02d-flag", x),
+                String.format("rslt%02d-interp", x)
             ));
         }
+        sb.append(String.format(",\"%s\",\"%s\",\"%s\",\"%s\"",
+          "sebiaSerumCurve",
+          "sebiaSerumFractions",
+          "sebiaUrineCurve",
+          "sebiaUrineFractions"
+        ));
         return(sb.toString());
     }
     
@@ -198,8 +206,8 @@ public class CoPathCase {
             sdf.format(collectionDate),
             empi.replace("\"", "'"),
             finalDiagnosis == null ? "" : finalDiagnosis.replace("\"", "'"),
-            karyotype == null ? "" : karyotype.replace("\"", "'"),
             procedureMap.get("Flow Cytometry") == null || procedureMap.get("Flow Cytometry").interp == null ? "" : procedureMap.get("Flow Cytometry").interp.replace("\"", "'"),
+            karyotype == null ? "" : karyotype.replace("\"", "'"),
             procedureMap.get("Chromosome Analysis") == null || procedureMap.get("Chromosome Analysis").interp == null ? "" : procedureMap.get("Chromosome Analysis").interp.replace("\"", "'"),
             procedureMap.get("Multiple Myeloma Panel, FISH") == null || procedureMap.get("Multiple Myeloma Panel, FISH").interp == null ? "" : procedureMap.get("Multiple Myeloma Panel, FISH").interp.replace("\"", "'")
         ));
@@ -219,6 +227,12 @@ public class CoPathCase {
                 pathNetResult.interp == null ? "" : pathNetResult.interp.replace("\"", "'")
             ));
         }
+        sb.append(String.format(",\"%s\",\"%s\",\"%s\",\"%s\"",
+          sebiaCaseSerum == null ? "" : sebiaCaseSerum.curve,
+          sebiaCaseSerum == null || sebiaCaseSerum.sebiaFractions == null ? "" : sebiaCaseSerum.sebiaFractions,
+          sebiaCaseUrine == null ? "" : sebiaCaseUrine.curve,
+          sebiaCaseUrine == null || sebiaCaseUrine.sebiaFractions == null? "" : sebiaCaseUrine.sebiaFractions
+        ));
         return(sb.toString());
     }
 
