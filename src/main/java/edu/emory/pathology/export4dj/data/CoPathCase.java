@@ -171,7 +171,7 @@ public class CoPathCase {
             "chromInterp",
             "fishInterp"
         ));
-        for(int probeNumber = 1; probeNumber <=7; probeNumber++) {
+        for(int probeNumber = 1; probeNumber <=9; probeNumber++) {
             sb.append(String.format(",\"%s\",\"%s\"",
                 String.format("FISH%1d-probeName", probeNumber),
                 String.format("FISH%1d-variation", probeNumber)
@@ -209,9 +209,10 @@ public class CoPathCase {
             procedureMap.get("Flow Cytometry") == null || procedureMap.get("Flow Cytometry").interp == null ? "" : procedureMap.get("Flow Cytometry").interp.replace("\"", "'"),
             karyotype == null ? "" : karyotype.replace("\"", "'"),
             procedureMap.get("Chromosome Analysis") == null || procedureMap.get("Chromosome Analysis").interp == null ? "" : procedureMap.get("Chromosome Analysis").interp.replace("\"", "'"),
-            procedureMap.get("Multiple Myeloma Panel, FISH") == null || procedureMap.get("Multiple Myeloma Panel, FISH").interp == null ? "" : procedureMap.get("Multiple Myeloma Panel, FISH").interp.replace("\"", "'")
+            (procedureMap.get("Multiple Myeloma Panel, FISH") == null || procedureMap.get("Multiple Myeloma Panel, FISH").interp == null ? "" : procedureMap.get("Multiple Myeloma Panel, FISH").interp.replace("\"", "'"))
+            + (procedureMap.get("t(4;14) and t(14;16) Panel, FISH") == null || procedureMap.get("t(4;14) and t(14;16) Panel, FISH").interp == null ? "" : "\n\n[Additional Probes]\n\n" + procedureMap.get("t(4;14) and t(14;16) Panel, FISH").interp.replace("\"", "'"))
         ));
-        for(int probeNumber = 1; probeNumber <=7; probeNumber++) {
+        for(int probeNumber = 1; probeNumber <=9; probeNumber++) {
             sb.append(String.format(",\"%s\",\"%s\"",
                 fishProbeMap.get(probeNumber) == null ? "" : fishProbeMap.get(probeNumber).probeName,
                 fishProbeMap.get(probeNumber) == null ? "" : fishProbeMap.get(probeNumber).getVariationConcatenated()

@@ -57,29 +57,39 @@ public class CoPathCaseFinder {
         pstmt3 = conn.prepareStatement(
             "select                                                                                                   "
           + "  cast(substring(dsc.name, charindex('(', dsc.name) + 1, 1) as int) as probe_no,                         "
-          + "  cast(ssd.inst as int) as item_no,                                                                      "
           + "  dsc.abbr as item,                                                                                      "
           + "  dsc.name as item_name,                                                                                 "
           + "  dsv.abbr as val,                                                                                       "
-          + "  dsv.name as val_name,                                                                                  "
-          + "  dsv.fillin_type as val_freetext_type,                                                                  "
-          + "  ssd.fillin_char as val_freetext_char                                                                   "
+          + "  dsv.name as val_name                                                                                   "
           + "from                                                                                                     "
-          + "  c_spec_synoptic_ws ssw                                                                                 "
-          + "  join c_spec_synoptic_dx ssd on(ssd.specimen_id = ssw.specimen_id and ssd.worksheet_inst = ssw.ws_inst) "
-          + "  join c_d_synoptic_value dsv on(dsv.id = ssd.synoptic_value_id)                                         "
+          + "  c_d_synoptic_ws cdsw                                                                                   "
+          + "  join c_d_synoptic_ws_ln cdswl on(cdswl.id = cdsw.id)                                                   "
+          + "  join c_d_synoptic_value dsv on(dsv.id = cdswl.value_id)                                                "
           + "  join c_d_synoptic_category dsc on(dsc.id = dsv.category_id)                                            "
           + "where                                                                                                    "
           + "  dsc.name like 'Probe Set (_)'                                                                          "
-          + "  and ssw.worksheet_id = 'temy85'                                                                        "
-          + "  and ssw.specimen_id = ?                                                                                "
+          + "  and cdsw.id = 'temy85'                                                                                 "
+          + "union all                                                                                                "
+          + "select                                                                                                   "
+          + "  7 + cast(substring(dsc.name, charindex('(', dsc.name) + 1, 1) as int) as probe_no,                     "
+          + "  dsc.abbr as item,                                                                                      "
+          + "  dsc.name as item_name,                                                                                 "
+          + "  dsv.abbr as val,                                                                                       "
+          + "  dsv.name as val_name                                                                                   "
+          + "from                                                                                                     "
+          + "  c_d_synoptic_ws cdsw                                                                                   "
+          + "  join c_d_synoptic_ws_ln cdswl on(cdswl.id = cdsw.id)                                                   "
+          + "  join c_d_synoptic_value dsv on(dsv.id = cdswl.value_id)                                                "
+          + "  join c_d_synoptic_category dsc on(dsc.id = dsv.category_id)                                            "
+          + "where                                                                                                    "
+          + "  dsc.name like 'Probe Set (_)'                                                                          "
+          + "  and cdsw.id = 'temy17'                                                                                 "
           + "order by                                                                                                 "
-          + "  2                                                                                                      "
+          + "  1                                                                                                      "
         );
         pstmt4 = conn.prepareStatement(
             "select                                                                                                   "
           + "  cast(substring(dsc.name, charindex('(', dsc.name) + 1, 1) as int) as probe_no,                         "
-          + "  cast(ssd.inst as int) as item_no,                                                                      "
           + "  dsc.abbr as item,                                                                                      "
           + "  dsc.name as item_name,                                                                                 "
           + "  dsv.abbr as val,                                                                                       "
@@ -101,17 +111,50 @@ public class CoPathCaseFinder {
           + "    )                                                                                                    "
           + "    and                                                                                                  "
           + "    (                                                                                                    "
-          + "      dsv.abbr like 'CF[_]Misc[_]RR_Positive'                                                            "
-          + "      or dsv.abbr like 'CF[_]Misc[_]CN_Positive'                                                         "
-          + "      or dsv.abbr like 'CF[_]Misc[_]AR_Positive'                                                         "
-          + "      or dsv.abbr like 'CF[_]Misc[_]OR_Positive'                                                         "
+          + "      dsv.abbr like 'CF[_]Misc[_]RR_Pos%'                                                                "
+          + "      or dsv.abbr like 'CF[_]Misc[_]CN_Pos%'                                                             "
+          + "      or dsv.abbr like 'CF[_]Misc[_]AR_Pos%'                                                             "
+          + "      or dsv.abbr like 'CF[_]Misc[_]OR_Pos%'                                                             "
           + "    )                                                                                                    "
           + "  )                                                                                                      "
           + "  and ssw.worksheet_id = 'temy85'                                                                        "
           + "  and ssw.specimen_id = ?                                                                                "
           + "  and cast(substring(dsc.name, charindex('(', dsc.name) + 1, 1) as int) = ?                              "
+          + "union all                                                                                                "
+          + "select                                                                                                   "
+          + "  7 + cast(substring(dsc.name, charindex('(', dsc.name) + 1, 1) as int) as probe_no,                     "
+          + "  dsc.abbr as item,                                                                                      "
+          + "  dsc.name as item_name,                                                                                 "
+          + "  dsv.abbr as val,                                                                                       "
+          + "  dsv.name as val_name,                                                                                  "
+          + "  dsv.fillin_type as val_freetext_type,                                                                  "
+          + "  ssd.fillin_char as val_freetext_char                                                                   "
+          + "from                                                                                                     "
+          + "  c_spec_synoptic_ws ssw                                                                                 "
+          + "  join c_spec_synoptic_dx ssd on(ssd.specimen_id = ssw.specimen_id and ssd.worksheet_inst = ssw.ws_inst) "
+          + "  join c_d_synoptic_value dsv on(dsv.id = ssd.synoptic_value_id)                                         "
+          + "  join c_d_synoptic_category dsc on(dsc.id = dsv.category_id)                                            "
+          + "where                                                                                                    "
+          + "  (                                                                                                      "
+          + "    (                                                                                                    "
+          + "      dsc.name like 'Rearrangement Results (_)'                                                          "
+          + "      or dsc.name like 'Copy Number Results (_)'                                                         "
+          + "      or dsc.name like 'Amplification Results (_)'                                                       "
+          + "      or dsc.name like 'Other Results (_)'                                                               "
+          + "    )                                                                                                    "
+          + "    and                                                                                                  "
+          + "    (                                                                                                    "
+          + "      dsv.abbr like 'CF[_]Misc[_]RR_Pos%'                                                                "
+          + "      or dsv.abbr like 'CF[_]Misc[_]CN_Pos%'                                                             "
+          + "      or dsv.abbr like 'CF[_]Misc[_]AR_Pos%'                                                             "
+          + "      or dsv.abbr like 'CF[_]Misc[_]OR_Pos%'                                                             "
+          + "    )                                                                                                    "
+          + "  )                                                                                                      "
+          + "  and ssw.worksheet_id = 'temy17'                                                                        "
+          + "  and ssw.specimen_id = ?                                                                                "
+          + "  and 7 + cast(substring(dsc.name, charindex('(', dsc.name) + 1, 1) as int) = ?                          "
           + "order by                                                                                                 "
-          + "  2                                                                                                      "
+          + "  1                                                                                                      "
         );
     }
     
@@ -129,13 +172,14 @@ public class CoPathCaseFinder {
             }
             rs2.close();
             coPathCase.fishProbes = new ArrayList<>();
-            pstmt3.setString(1, coPathCase.specimenId);
             ResultSet rs3 = pstmt3.executeQuery();
             while(rs3.next()) {
                 FishProbe fishProbe = new CoPathCase.FishProbe(rs3);
                 coPathCase.fishProbes.add(fishProbe);
                 pstmt4.setString(1, coPathCase.specimenId);
                 pstmt4.setInt(2, fishProbe.probeNumber);
+                pstmt4.setString(3, coPathCase.specimenId);
+                pstmt4.setInt(4, fishProbe.probeNumber);
                 ResultSet rs4 = pstmt4.executeQuery();
                 while(rs4.next()) {
                     fishProbe.setVariationProperties(rs4);
