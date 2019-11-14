@@ -51,12 +51,20 @@ public class CoPathCase {
         public String probeName;
         @XmlAttribute
         public Boolean structuralAbn;
+        @XmlTransient
+        public Boolean structuralAbnNeg;
         @XmlAttribute
         public Boolean copyNumberAbn;
+        @XmlTransient
+        public Boolean copyNumberAbnNeg;
         @XmlAttribute
         public Boolean amplificationAbn;
+        @XmlTransient
+        public Boolean amplificationAbnNeg;
         @XmlAttribute
         public Boolean otherAbn;
+        @XmlTransient
+        public Boolean otherAbnNeg;
         @XmlAttribute
         public String otherAbnName;
 
@@ -69,23 +77,51 @@ public class CoPathCase {
         }
         
         public void setVariationProperties(ResultSet rs) throws SQLException {
-            if(rs.getString("val").matches(".*RR[0-9]Positive")) {
+            if(rs.getString("val").matches("(?).*RR[0-9]Pos(itive)?")) {
                 structuralAbn = true;
             }
-            else if(rs.getString("val").matches(".*CN[0-9]Positive")) {
+            else if(rs.getString("val").matches("(?).*CN[0-9]Pos(itive)?")) {
                 copyNumberAbn = true;
             }
-            else if(rs.getString("val").matches(".*AR[0-9]Positive")) {
+            else if(rs.getString("val").matches("(?).*AR[0-9]Pos(itive)?")) {
                 amplificationAbn = true;
             }
-            else if(rs.getString("val").matches(".*OR[0-9]Positive")) {
+            else if(rs.getString("val").matches("(?).*OR[0-9]Pos(itive)?")) {
                 otherAbn = true;
                 otherAbnName = rs.getString("val_freetext_char");
             }
+            else if(rs.getString("val").matches("(?).*RR[0-9]Neg(ative)?")) {
+                structuralAbnNeg = true;
+            }
+            else if(rs.getString("val").matches("(?).*CN[0-9]Neg(ative)?")) {
+                copyNumberAbnNeg = true;
+            }
+            else if(rs.getString("val").matches("(?).*AR[0-9]Neg(ative)?")) {
+                amplificationAbnNeg = true;
+            }
+            else if(rs.getString("val").matches("(?).*OR[0-9]Neg(ative)?")) {
+                otherAbnNeg = true;
+            }
+        }
+
+        @XmlAttribute
+        public Boolean getAllNegative() {
+            if(
+                structuralAbnNeg != null && structuralAbnNeg
+                && copyNumberAbnNeg != null && copyNumberAbnNeg
+                && amplificationAbnNeg != null && amplificationAbnNeg
+                && otherAbnNeg != null && otherAbnNeg
+            ) {
+                return true;
+            }
+            return null;
         }
         
         public String getVariationConcatenated() {
             List<String> vc = new ArrayList<>();
+            if(getAllNegative() != null && getAllNegative()) {
+                return "negative";
+            }
             if(structuralAbn != null && structuralAbn) {
                 vc.add("struct");
             }
