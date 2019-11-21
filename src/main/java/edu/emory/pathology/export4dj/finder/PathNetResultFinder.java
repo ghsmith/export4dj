@@ -49,7 +49,20 @@ public class PathNetResultFinder {
           + "          structured_result_type_id in                                                                                                                                 "
           + "          (                                                                                                                                                            "
 
-          + " '1515017'   " // Albumin Level
+          + " '1512214'   " // White Blood Count
+          + ",'1512995'   " // Red Blood Cell Count
+          + ",'1513817'   " // Hemoglobin
+          + ",'1513889'   " // Hematocrit
+          + ",'1513468'   " // MCV
+          + ",'1513472'   " // MCH
+          + ",'1513471'   " // MCHC
+          + ",'651859719' " // Red Cell Distribution Width-CV
+          + ",'651859723' " // Red Cell Distribution Width-SD
+          + ",'1512939'   " // RDW
+          + ",'200186179' " // Auto Nucleated Red Cell Count
+          + ",'1513222'   " // Platelet Count       
+                    
+          + ",'1515017'   " // Albumin Level
           + ",'1514422'   " // Creatinine
           + ",'1514676'   " // Calcium Level Total
           + ",'1513585'   " // Lactate Dehydrogenase
@@ -106,7 +119,20 @@ public class PathNetResultFinder {
           + "      structured_result_type_id in                                                                                                                                     "
           + "      (                                                                                                                                                                "
 
-          + " '1515017'   " // Albumin Level
+          + " '1512214'   " // White Blood Count
+          + ",'1512995'   " // Red Blood Cell Count
+          + ",'1513817'   " // Hemoglobin
+          + ",'1513889'   " // Hematocrit
+          + ",'1513468'   " // MCV
+          + ",'1513472'   " // MCH
+          + ",'1513471'   " // MCHC
+          + ",'651859719' " // Red Cell Distribution Width-CV
+          + ",'651859723' " // Red Cell Distribution Width-SD
+          + ",'1512939'   " // RDW
+          + ",'200186179' " // Auto Nucleated Red Cell Count
+          + ",'1513222'   " // Platelet Count       
+                    
+          + ",'1515017'   " // Albumin Level
           + ",'1514422'   " // Creatinine
           + ",'1514676'   " // Calcium Level Total
           + ",'1513585'   " // Lactate Dehydrogenase
@@ -146,31 +172,43 @@ public class PathNetResultFinder {
           + "  (                                                                                                                                                                    "
           + "    lsrt.structured_result_type_desc                                                                                                                                   "
 
-          + ",'Albumin Level', 1                       "
-          + ",'Creatinine', 2                          "
-          + ",'Calcium Level Total', 3                 "
-          + ",'Lactate Dehydrogenase', 4               "
-          + ",'Beta 2 Microglobulin Level', 5          "
-          + ",'Immunoglobulin IgA Level', 6            "
-          + ",'Immunoglobulin IgG Level Total', 7      "
-          + ",'Immunoglobulin IgM Level Total', 8      "
-          + ",'Free Kappa', 9                          "
-          + ",'Free Lambda', 10                        "
-          + ",'Total Protein', 11                      "
-          + ",'Albumin Fraction', 12                   "
-          + ",'Alpha-1 Fraction', 13                   "
-          + ",'Alpha-2 Fraction', 14                   "
-          + ",'Beta-1 Fraction', 15                    "
-          + ",'Beta-2 Fraction', 16                    "
-          + ",'Gamma Globulin Fraction', 17            "
-          + ",'Paraprotein Concentration', 18          "
-          + ",'SPEINTERP', 19                          "
-          + ",'Immunfixation Interpretation', 20       "
-          + ",'Total Protein Urine 24 Hour', 21        "
-          + ",'Paraprotein/24 hours', 22               "
-          + ",'Urine Protein Electrophoresis', 23      "
-          + ",'Urine Immunofixation Interp', 24        "
-          + ",'Urine Immunoelectrophoresis Interp', 25 "
+          + ",'White Blood Count'                 ,  1 "
+          + ",'Red Blood Cell Count'              ,  2 "
+          + ",'Hemoglobin'                        ,  3 "
+          + ",'Hematocrit'                        ,  4 "
+          + ",'MCV'                               ,  5 "
+          + ",'MCH'                               ,  6 "
+          + ",'MCHC'                              ,  7 "
+          + ",'Red Cell Distribution Width-CV'    ,  8 "
+          + ",'Red Cell Distribution Width-SD'    ,  9 "
+          + ",'RDW'                               , 10 "
+          + ",'Auto Nucleated Red Cell Count'     , 11 "
+          + ",'Platelet Count'                    , 12 "
+          + ",'Albumin Level'                     , 13 "
+          + ",'Creatinine'                        , 14 "
+          + ",'Calcium Level Total'               , 15 "
+          + ",'Lactate Dehydrogenase'             , 16 "
+          + ",'Beta 2 Microglobulin Level'        , 17 "
+          + ",'Immunoglobulin IgA Level'          , 18 "
+          + ",'Immunoglobulin IgG Level Total'    , 19 "
+          + ",'Immunoglobulin IgM Level Total'    , 20 "
+          + ",'Free Kappa'                        , 21 "
+          + ",'Free Lambda'                       , 22 "
+          + ",'Total Protein'                     , 23 "
+          + ",'Albumin Fraction'                  , 24 "
+          + ",'Alpha-1 Fraction'                  , 25 "
+          + ",'Alpha-2 Fraction'                  , 26 "
+          + ",'Beta-1 Fraction'                   , 27 "
+          + ",'Beta-2 Fraction'                   , 28 "
+          + ",'Gamma Globulin Fraction'           , 29 "
+          + ",'Paraprotein Concentration'         , 30 "
+          + ",'SPEINTERP'                         , 31 "
+          + ",'Immunfixation Interpretation'      , 32 "
+          + ",'Total Protein Urine 24 Hour'       , 33 "
+          + ",'Paraprotein/24 hours'              , 34 "
+          + ",'Urine Protein Electrophoresis'     , 35 "
+          + ",'Urine Immunofixation Interp'       , 36 "
+          + ",'Urine Immunoelectrophoresis Interp', 37 "
 
           + "  )                                                                                                                                                                    "
         );       

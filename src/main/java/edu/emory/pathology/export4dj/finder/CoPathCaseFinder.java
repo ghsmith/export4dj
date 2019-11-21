@@ -43,16 +43,17 @@ public class CoPathCaseFinder {
           + "  c_specimen.specnum_formatted = ?                                                                                               "
         );
         pstmt2 = conn.prepareStatement(
-            "select                                                                                                                                                                   "
-          + "  c_d_sprotype.name proc_name,                                                                                                                                           "
-          + "  (select text_data from c_spec_text where specimen_id = p_special_proc.specimen_id and link_inst = p_special_proc.sp_inst and texttype_id = '$procint') as procint_text "
-          + "from                                                                                                                                                                     "
-          + "  p_special_proc                                                                                                                                                         "
-          + "  join c_d_sprotype on (c_d_sprotype.id = p_special_proc.sprotype_id)                                                                                                    "
-          + "where                                                                                                                                                                    "
-          + "  p_special_proc.specimen_id = ?                                                                                                                                         "
-          + "order by                                                                                                                                                                 "
-          + "  p_special_proc.sp_inst                                                                                                                                                 "
+            "select                                                                                                                                                                    "
+          + "  c_d_sprotype.name proc_name,                                                                                                                                            "
+          + "  (select text_data from c_spec_text where specimen_id = p_special_proc.specimen_id and link_inst = p_special_proc.sp_inst and texttype_id = '$procint') as procint_text, "
+          + "  (select text_data from c_spec_text where specimen_id = p_special_proc.specimen_id and link_inst = p_special_proc.sp_inst and texttype_id = '$procres') as procres_text  "
+          + "from                                                                                                                                                                      "
+          + "  p_special_proc                                                                                                                                                          "
+          + "  join c_d_sprotype on (c_d_sprotype.id = p_special_proc.sprotype_id)                                                                                                     "
+          + "where                                                                                                                                                                     "
+          + "  p_special_proc.specimen_id = ?                                                                                                                                          "
+          + "order by                                                                                                                                                                  "
+          + "  p_special_proc.sp_inst                                                                                                                                                  "
         );
         pstmt3 = conn.prepareStatement(
             "select                                                                                                   "

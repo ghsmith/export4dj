@@ -26,6 +26,7 @@ public class CoPathCase {
         @XmlAttribute
         public String procName;
         public String interp;
+        public String comment;
 
         public CoPathProcedure() {
         }
@@ -33,6 +34,12 @@ public class CoPathCase {
         public CoPathProcedure(ResultSet rs) throws SQLException {
             this.procName = rs.getString("proc_name");
             this.interp = rs.getString("procint_text") == null ? null : rs.getString("procint_text")
+                .replace("\u0008", "") // there are ASCII 08 (backspace?) characters in this column
+                .replace("\u00a0", " ") // thar are ASCII A0 (non-breaking space) characaters in this column
+                .replace("\u00b7", " ") // thar are ASCII B7 (dot) characaters in this column
+                .replace("\r", "")
+                .replaceAll("\\s+$", "");
+            this.comment = rs.getString("procres_text") == null ? null : rs.getString("procres_text")
                 .replace("\u0008", "") // there are ASCII 08 (backspace?) characters in this column
                 .replace("\u00a0", " ") // thar are ASCII A0 (non-breaking space) characaters in this column
                 .replace("\u00b7", " ") // thar are ASCII B7 (dot) characaters in this column
@@ -196,7 +203,7 @@ public class CoPathCase {
 
     public static String toStringHeader() {
         StringBuffer sb = new StringBuffer();
-        sb.append(String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
+        sb.append(String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
             "accNo",
             "accDate",
             "collDate",
@@ -205,7 +212,8 @@ public class CoPathCase {
             "flowInterp",
             "karyotype",
             "chromInterp",
-            "fishInterp"
+            "fishInterp",
+            "fishComment"
         ));
         for(int probeNumber = 1; probeNumber <=9; probeNumber++) {
             sb.append(String.format(",\"%s\",\"%s\"",
@@ -213,7 +221,7 @@ public class CoPathCase {
                 String.format("FISH%1d-variation", probeNumber)
             ));
         }
-        for(int x = 1; x <= 25; x++) {
+        for(int x = 1; x <= 37; x++) {
             sb.append(String.format(",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
                 String.format("rslt%02d-resultName", x),
                 String.format("rslt%02d-collectionDateDelta", x),
@@ -236,7 +244,7 @@ public class CoPathCase {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append(String.format(
-            "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
+            "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
             accNo.replace("\"", "'"),
             sdf.format(accessionDate),
             sdf.format(collectionDate),
@@ -246,7 +254,9 @@ public class CoPathCase {
             karyotype == null ? "" : karyotype.replace("\"", "'"),
             procedureMap.get("Chromosome Analysis") == null || procedureMap.get("Chromosome Analysis").interp == null ? "" : procedureMap.get("Chromosome Analysis").interp.replace("\"", "'"),
             (procedureMap.get("Multiple Myeloma Panel, FISH") == null || procedureMap.get("Multiple Myeloma Panel, FISH").interp == null ? "" : procedureMap.get("Multiple Myeloma Panel, FISH").interp.replace("\"", "'"))
-            + (procedureMap.get("t(4;14) and t(14;16) Panel, FISH") == null || procedureMap.get("t(4;14) and t(14;16) Panel, FISH").interp == null ? "" : "\n\n[Additional Probes]\n\n" + procedureMap.get("t(4;14) and t(14;16) Panel, FISH").interp.replace("\"", "'"))
+            + (procedureMap.get("t(4;14) and t(14;16) Panel, FISH") == null || procedureMap.get("t(4;14) and t(14;16) Panel, FISH").interp == null ? "" : "\n\n[Additional Probes]\n\n" + procedureMap.get("t(4;14) and t(14;16) Panel, FISH").interp.replace("\"", "'")),
+            (procedureMap.get("Multiple Myeloma Panel, FISH") == null || procedureMap.get("Multiple Myeloma Panel, FISH").comment == null ? "" : procedureMap.get("Multiple Myeloma Panel, FISH").comment.replace("\"", "'"))
+            + (procedureMap.get("t(4;14) and t(14;16) Panel, FISH") == null || procedureMap.get("t(4;14) and t(14;16) Panel, FISH").comment == null ? "" : "\n\n[Additional Probes]\n\n" + procedureMap.get("t(4;14) and t(14;16) Panel, FISH").comment.replace("\"", "'"))
         ));
         for(int probeNumber = 1; probeNumber <=9; probeNumber++) {
             sb.append(String.format(",\"%s\",\"%s\"",
