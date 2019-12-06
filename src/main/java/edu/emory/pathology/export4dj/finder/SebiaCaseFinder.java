@@ -37,12 +37,15 @@ import org.apache.commons.csv.CSVRecord;
  */
 public class SebiaCaseFinder {
 
-    public Map<String, CSVRecord> csvRecords;
+    public Map<String, CSVRecord> csvRecordsByAccNo;
+    public Map<String, CSVRecord> csvNormalControlRecordsByRunDate;
     
     public SebiaCaseFinder(File csvIn) throws IOException {
         
-        csvRecords = new HashMap<>();
         CSVParser csvParser = CSVParser.parse(csvIn, Charset.defaultCharset(), CSVFormat.DEFAULT.withFirstRecordAsHeader());
+
+        csvRecordsByAccNo = new HashMap<>();
+        csvNormalControlRecordsByRunDate = new HashMap<>();
         for(CSVRecord csvRecord : csvParser) {
             if(("B".equals(csvRecord.get("programma")) || "R".equals(csvRecord.get("programma"))) && csvRecord.get("id") != null) {
                 if(csvRecord.get("id").length() == 9) {
@@ -52,24 +55,41 @@ public class SebiaCaseFinder {
                     if(csvRecord.get("data_prel") != null && csvRecord.get("data_prel").length() > 0) { // this is the actual collection date, but it isn't always there
                         collectionYear = csvRecord.get("data_prel").substring(2, 4);
                     }
-                    csvRecords.put(collectionYear + csvRecord.get("id").substring(0,8), csvRecord);
+                    csvRecordsByAccNo.put(collectionYear + csvRecord.get("id").substring(0,8), csvRecord);
                 }
                 else if(csvRecord.get("id").length() == 13) {
                     // Millennium PathNet accession number (minus decade) and
                     // plus container
-                    csvRecords.put("00" + csvRecord.get("id").substring(0, 3) + "201" + csvRecord.get("id").substring(3, 7) + "0" + csvRecord.get("id").substring(7, 12), csvRecord);
+                    csvRecordsByAccNo.put("00" + csvRecord.get("id").substring(0, 3) + "201" + csvRecord.get("id").substring(3, 7) + "0" + csvRecord.get("id").substring(7, 12), csvRecord);
+                }
+                if(csvRecord.get("nominativo").contains("#")) {
+                    csvNormalControlRecordsByRunDate.put(csvRecord.get("data_analisi") + "." + csvRecord.get("programma") + "." + csvRecord.get("seq"), csvRecord);
                 }
             }
         }
-        
+
     }
 
    public SebiaCase getSebiaCaseByAccNo(String accNo) {
        SebiaCase sebiaCase = null;
-       if(csvRecords.get(accNo) != null) {
-           sebiaCase = new SebiaCase(csvRecords.get(accNo));
+       if(csvRecordsByAccNo.get(accNo) != null) {
+           sebiaCase = new SebiaCase(csvRecordsByAccNo.get(accNo));
        }
        return sebiaCase;
    }
-    
+
+   public SebiaCase getSebiaNormalControlCaseByAccNo(String accNo) {
+       SebiaCase sebiaCaseNormalControl = null;
+       if(csvRecordsByAccNo.get(accNo) != null) {
+           for(int seq = Integer.parseInt(csvRecordsByAccNo.get(accNo).get("seq")); seq >= 1; seq--) {
+               CSVRecord csvRecord = csvNormalControlRecordsByRunDate.get(csvRecordsByAccNo.get(accNo).get("data_analisi") + "." + csvRecordsByAccNo.get(accNo).get("programma") + "." + seq);
+               if(csvRecord != null) {
+                   sebiaCaseNormalControl = new SebiaCase(csvRecord);
+                   break;
+               }
+           }
+       }
+       return sebiaCaseNormalControl;
+   }
+   
 }

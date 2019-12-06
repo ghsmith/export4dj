@@ -66,6 +66,7 @@ public class DumpUtility {
             accNoWriter.flush();
         }
         accNoReader.close();
+        accNoWriter.close();
         
         connCoPath.close();
         connCdw.close();

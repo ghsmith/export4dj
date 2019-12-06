@@ -197,23 +197,11 @@ public class CoPathCaseFinder {
             }
             rs3.close();
             coPathCase.pathNetResults = pathNetResultFinder.getPathNetResultsByEmpiProximateToCollectionDate(coPathCase.empi, coPathCase.collectionDate);
-            coPathCase.procedureMap = new HashMap<>();
-            for(CoPathProcedure coPathProcedure : coPathCase.procedures) {
-                coPathCase.procedureMap.put(coPathProcedure.procName, coPathProcedure);
+            if(coPathCase.getPathNetResultMap().get("SPEINTERP") != null && coPathCase.getPathNetResultMap().get("SPEINTERP").accNo != null) {
+                coPathCase.sebiaCaseSerum = sebiaCaseFinder.getSebiaCaseByAccNo(coPathCase.getPathNetResultMap().get("SPEINTERP").accNo);
             }
-            coPathCase.fishProbeMap = new HashMap<>();
-            for(FishProbe fishProbe : coPathCase.fishProbes) {
-                coPathCase.fishProbeMap.put(fishProbe.probeNumber, fishProbe);
-            }
-            coPathCase.pathNetResultMap = new HashMap<>();
-            for(PathNetResult pathNetResult : coPathCase.pathNetResults) {
-                coPathCase.pathNetResultMap.put(pathNetResult.resultName, pathNetResult);
-            }
-            if(coPathCase.pathNetResultMap.get("SPEINTERP") != null && coPathCase.pathNetResultMap.get("SPEINTERP").accNo != null) {
-                coPathCase.sebiaCaseSerum = sebiaCaseFinder.getSebiaCaseByAccNo(coPathCase.pathNetResultMap.get("SPEINTERP").accNo);
-            }
-            if(coPathCase.pathNetResultMap.get("Urine Protein Electrophoresis") != null && coPathCase.pathNetResultMap.get("Urine Protein Electrophoresis").accNo != null) {
-                coPathCase.sebiaCaseUrine = sebiaCaseFinder.getSebiaCaseByAccNo(coPathCase.pathNetResultMap.get("Urine Protein Electrophoresis").accNo);
+            if(coPathCase.getPathNetResultMap().get("Urine Protein Electrophoresis") != null && coPathCase.getPathNetResultMap().get("Urine Protein Electrophoresis").accNo != null) {
+                coPathCase.sebiaCaseUrine = sebiaCaseFinder.getSebiaCaseByAccNo(coPathCase.getPathNetResultMap().get("Urine Protein Electrophoresis").accNo);
             }
         }
         rs1.close();

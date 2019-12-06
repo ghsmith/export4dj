@@ -3,8 +3,10 @@ package edu.emory.pathology.export4dj.data;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -123,6 +125,15 @@ public class CoPathCase {
             }
             return null;
         }
+
+        public void setAllNegative(Boolean allNegative) {
+            if(allNegative) {
+                structuralAbnNeg = true;
+                copyNumberAbnNeg = true;
+                amplificationAbnNeg = true;
+                otherAbnNeg = true;
+            }
+        }
         
         public String getVariationConcatenated() {
             List<String> vc = new ArrayList<>();
@@ -164,19 +175,21 @@ public class CoPathCase {
     @XmlElement(name = "procedure")
     public List<CoPathProcedure> procedures;
     @XmlTransient
-    public Map<String, CoPathProcedure> procedureMap;
+    private Map<String, CoPathProcedure> procedureMap;
     @XmlElementWrapper(name = "fishProbes")
     @XmlElement(name = "fishProbe")
     public List<FishProbe> fishProbes;
     @XmlTransient
-    public Map<Integer, FishProbe> fishProbeMap;
+    private Map<Integer, FishProbe> fishProbeMap;
     @XmlElementWrapper(name = "pathNetResults")
     @XmlElement(name = "pathNetResult")
     public List<PathNetResult> pathNetResults;
     @XmlTransient
-    public Map<String, PathNetResult> pathNetResultMap;
+    private Map<String, PathNetResult> pathNetResultMap;
     public SebiaCase sebiaCaseSerum;
+    public SebiaCase sebiaCaseSerumNormalControl;
     public SebiaCase sebiaCaseUrine;
+    public SebiaCase sebiaCaseUrineNormalControl;
 
     public CoPathCase() {
     }
@@ -231,11 +244,15 @@ public class CoPathCase {
                 String.format("rslt%02d-interp", x)
             ));
         }
-        sb.append(String.format(",\"%s\",\"%s\",\"%s\",\"%s\"",
+        sb.append(String.format(",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
           "sebiaSerumCurve",
           "sebiaSerumFractions",
+          "sebiaSerumNormalControlCurve",
+          "sebiaSerumNormalControlFractions",
           "sebiaUrineCurve",
-          "sebiaUrineFractions"
+          "sebiaUrineFractions",
+          "sebiaUrineNormalControlCurve",
+          "sebiaUrineNormalControlFractions"
         ));
         return(sb.toString());
     }
@@ -250,18 +267,18 @@ public class CoPathCase {
             sdf.format(collectionDate),
             empi.replace("\"", "'"),
             finalDiagnosis == null ? "" : finalDiagnosis.replace("\"", "'"),
-            procedureMap.get("Flow Cytometry") == null || procedureMap.get("Flow Cytometry").interp == null ? "" : procedureMap.get("Flow Cytometry").interp.replace("\"", "'"),
+            getProcedureMap().get("Flow Cytometry") == null || getProcedureMap().get("Flow Cytometry").interp == null ? "" : getProcedureMap().get("Flow Cytometry").interp.replace("\"", "'"),
             karyotype == null ? "" : karyotype.replace("\"", "'"),
-            procedureMap.get("Chromosome Analysis") == null || procedureMap.get("Chromosome Analysis").interp == null ? "" : procedureMap.get("Chromosome Analysis").interp.replace("\"", "'"),
-            (procedureMap.get("Multiple Myeloma Panel, FISH") == null || procedureMap.get("Multiple Myeloma Panel, FISH").interp == null ? "" : procedureMap.get("Multiple Myeloma Panel, FISH").interp.replace("\"", "'"))
-            + (procedureMap.get("t(4;14) and t(14;16) Panel, FISH") == null || procedureMap.get("t(4;14) and t(14;16) Panel, FISH").interp == null ? "" : "\n\n[Additional Probes]\n\n" + procedureMap.get("t(4;14) and t(14;16) Panel, FISH").interp.replace("\"", "'")),
-            (procedureMap.get("Multiple Myeloma Panel, FISH") == null || procedureMap.get("Multiple Myeloma Panel, FISH").comment == null ? "" : procedureMap.get("Multiple Myeloma Panel, FISH").comment.replace("\"", "'"))
-            + (procedureMap.get("t(4;14) and t(14;16) Panel, FISH") == null || procedureMap.get("t(4;14) and t(14;16) Panel, FISH").comment == null ? "" : "\n\n[Additional Probes]\n\n" + procedureMap.get("t(4;14) and t(14;16) Panel, FISH").comment.replace("\"", "'"))
+            getProcedureMap().get("Chromosome Analysis") == null || getProcedureMap().get("Chromosome Analysis").interp == null ? "" : getProcedureMap().get("Chromosome Analysis").interp.replace("\"", "'"),
+            (getProcedureMap().get("Multiple Myeloma Panel, FISH") == null || getProcedureMap().get("Multiple Myeloma Panel, FISH").interp == null ? "" : getProcedureMap().get("Multiple Myeloma Panel, FISH").interp.replace("\"", "'"))
+            + (getProcedureMap().get("t(4;14) and t(14;16) Panel, FISH") == null || getProcedureMap().get("t(4;14) and t(14;16) Panel, FISH").interp == null ? "" : "\n\n[Additional Probes]\n\n" + getProcedureMap().get("t(4;14) and t(14;16) Panel, FISH").interp.replace("\"", "'")),
+            (getProcedureMap().get("Multiple Myeloma Panel, FISH") == null || getProcedureMap().get("Multiple Myeloma Panel, FISH").comment == null ? "" : getProcedureMap().get("Multiple Myeloma Panel, FISH").comment.replace("\"", "'"))
+            + (getProcedureMap().get("t(4;14) and t(14;16) Panel, FISH") == null || getProcedureMap().get("t(4;14) and t(14;16) Panel, FISH").comment == null ? "" : "\n\n[Additional Probes]\n\n" + getProcedureMap().get("t(4;14) and t(14;16) Panel, FISH").comment.replace("\"", "'"))
         ));
         for(int probeNumber = 1; probeNumber <=9; probeNumber++) {
             sb.append(String.format(",\"%s\",\"%s\"",
-                fishProbeMap.get(probeNumber) == null ? "" : fishProbeMap.get(probeNumber).probeName,
-                fishProbeMap.get(probeNumber) == null ? "" : fishProbeMap.get(probeNumber).getVariationConcatenated()
+                getFishProbeMap().get(probeNumber) == null ? "" : getFishProbeMap().get(probeNumber).probeName,
+                getFishProbeMap().get(probeNumber) == null ? "" : getFishProbeMap().get(probeNumber).getVariationConcatenated()
             ));
         }
         for(PathNetResult pathNetResult : pathNetResults) {
@@ -274,22 +291,68 @@ public class CoPathCase {
                 pathNetResult.interp == null ? "" : pathNetResult.interp.replace("\"", "'")
             ));
         }
-        sb.append(String.format(",\"%s\",\"%s\",\"%s\",\"%s\"",
+        sb.append(String.format(",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
           sebiaCaseSerum == null ? "" : sebiaCaseSerum.curve,
           sebiaCaseSerum == null || sebiaCaseSerum.sebiaFractions == null ? "" : sebiaCaseSerum.sebiaFractions,
+          sebiaCaseSerumNormalControl == null ? "" : sebiaCaseSerumNormalControl.curve,
+          sebiaCaseSerumNormalControl == null || sebiaCaseSerumNormalControl.sebiaFractions == null ? "" : sebiaCaseSerumNormalControl.sebiaFractions,
           sebiaCaseUrine == null ? "" : sebiaCaseUrine.curve,
-          sebiaCaseUrine == null || sebiaCaseUrine.sebiaFractions == null? "" : sebiaCaseUrine.sebiaFractions
+          sebiaCaseUrine == null || sebiaCaseUrine.sebiaFractions == null? "" : sebiaCaseUrine.sebiaFractions,
+          sebiaCaseUrineNormalControl == null ? "" : sebiaCaseUrineNormalControl.curve,
+          sebiaCaseUrineNormalControl == null || sebiaCaseUrineNormalControl.sebiaFractions == null? "" : sebiaCaseUrineNormalControl.sebiaFractions
         ));
         return(sb.toString());
     }
 
     @XmlAttribute
     public String getAccessionDate() {
-        return sdf.format(accessionDate);
+        return sdf.format(this.accessionDate);
     }
+
+    public void setAccessionDate(String accessionDate) throws ParseException {
+        this.accessionDate = new Date(sdf.parse(accessionDate).getTime());
+    }
+
     @XmlAttribute
     public String getCollectionDate() {
-        return sdf.format(collectionDate);
+        return sdf.format(this.collectionDate);
+    }
+
+    public void setCollectionDate(String collectionDate) throws ParseException {
+        this.collectionDate = new Date(sdf.parse(collectionDate).getTime());
+    }
+
+    @XmlTransient
+    public Map<String, CoPathProcedure> getProcedureMap() {
+        if(procedureMap == null) {
+            procedureMap = new HashMap<>();
+            for(CoPathProcedure coPathProcedure : procedures) {
+                procedureMap.put(coPathProcedure.procName, coPathProcedure);
+            }
+        }
+        return procedureMap;
+    }
+    
+    @XmlTransient
+    public Map<Integer, FishProbe> getFishProbeMap() {
+        if(fishProbeMap == null) {
+            fishProbeMap = new HashMap<>();
+            for(FishProbe fishProbe : fishProbes) {
+                fishProbeMap.put(fishProbe.probeNumber, fishProbe);
+            }
+        }
+        return fishProbeMap;
+    }
+    
+    @XmlTransient
+    public Map<String, PathNetResult> getPathNetResultMap() {
+        if(pathNetResultMap == null) {
+            pathNetResultMap = new HashMap<>();
+            for(PathNetResult pathNetResult : pathNetResults) {
+                pathNetResultMap.put(pathNetResult.resultName, pathNetResult);
+            }
+        }
+        return pathNetResultMap;
     }
     
 }

@@ -39,6 +39,8 @@ public class SebiaCase {
     }
     
     @XmlAttribute
+    public String gelKey;
+    @XmlAttribute
     public String id;
     @XmlAttribute
     public String protein;
@@ -49,6 +51,7 @@ public class SebiaCase {
     public List<SebiaFraction> sebiaFractions;
 
     public SebiaCase(CSVRecord csvRecord) {
+        this.gelKey = csvRecord.get("data_analisi") + "." + csvRecord.get("programma") + "." + csvRecord.get("seq");
         this.id = csvRecord.get("id");
         this.protein = csvRecord.get("pt");
         this.curve = csvRecord.get("curva");
