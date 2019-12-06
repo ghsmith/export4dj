@@ -3,11 +3,9 @@ package edu.emory.pathology.export4dj;
 import edu.emory.pathology.export4dj.data.CoPathCase;
 import edu.emory.pathology.export4dj.data.Export4DJ;
 import edu.emory.pathology.export4dj.finder.SebiaCaseFinder;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -21,7 +19,7 @@ import javax.xml.bind.Unmarshaller;
  *
  * @author Geoffrey H. Smith
  */
-public class AddSebiaNormalControlUtility {
+public class AddSebiaGelControlUtility {
     
     public static void main(String[] args) throws IOException, ClassNotFoundException, SQLException, JAXBException {
 
@@ -38,10 +36,10 @@ public class AddSebiaNormalControlUtility {
             System.out.println(cpc.accNo);
             if(cpc.pathNetResults != null && cpc.pathNetResults.size() > 0) {
                 if(cpc.getPathNetResultMap().get("SPEINTERP").accNo != null) {
-                    cpc.sebiaCaseSerumNormalControl = scf.getSebiaNormalControlCaseByAccNo(cpc.getPathNetResultMap().get("SPEINTERP").accNo);
+                    cpc.sebiaCaseSerumGelControl = scf.getSebiaGelControlByAccNo(cpc.getPathNetResultMap().get("SPEINTERP").accNo);
                 }
                 if(cpc.getPathNetResultMap().get("Urine Protein Electrophoresis").accNo != null) {
-                    cpc.sebiaCaseUrineNormalControl = scf.getSebiaNormalControlCaseByAccNo(cpc.getPathNetResultMap().get("Urine Protein Electrophoresis").accNo);
+                    cpc.sebiaCaseUrineGelControl = scf.getSebiaGelControlByAccNo(cpc.getPathNetResultMap().get("Urine Protein Electrophoresis").accNo);
                 }
             }
             accNoWriter.println(cpc);

@@ -171,6 +171,7 @@ public class CoPathCase {
     public String empi;
     public String finalDiagnosis;
     public String karyotype;
+    public Demographics demographics;
     @XmlElementWrapper(name = "procedures")
     @XmlElement(name = "procedure")
     public List<CoPathProcedure> procedures;
@@ -187,9 +188,9 @@ public class CoPathCase {
     @XmlTransient
     private Map<String, PathNetResult> pathNetResultMap;
     public SebiaCase sebiaCaseSerum;
-    public SebiaCase sebiaCaseSerumNormalControl;
+    public SebiaCase sebiaCaseSerumGelControl;
     public SebiaCase sebiaCaseUrine;
-    public SebiaCase sebiaCaseUrineNormalControl;
+    public SebiaCase sebiaCaseUrineGelControl;
 
     public CoPathCase() {
     }
@@ -216,11 +217,18 @@ public class CoPathCase {
 
     public static String toStringHeader() {
         StringBuffer sb = new StringBuffer();
-        sb.append(String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
+        sb.append(String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
             "accNo",
             "accDate",
             "collDate",
             "empi",
+            "birthDate",
+            "deathDate",
+            "ethnicity",
+            "race",
+            "ethnicGroup",
+            "gender",
+            "zip_code",
             "finalDiag",
             "flowInterp",
             "karyotype",
@@ -247,12 +255,12 @@ public class CoPathCase {
         sb.append(String.format(",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
           "sebiaSerumCurve",
           "sebiaSerumFractions",
-          "sebiaSerumNormalControlCurve",
-          "sebiaSerumNormalControlFractions",
+          "sebiaSerumGelControlCurve",
+          "sebiaSerumGelControlFractions",
           "sebiaUrineCurve",
           "sebiaUrineFractions",
-          "sebiaUrineNormalControlCurve",
-          "sebiaUrineNormalControlFractions"
+          "sebiaUrineGelControlCurve",
+          "sebiaUrineGelControlFractions"
         ));
         return(sb.toString());
     }
@@ -261,11 +269,18 @@ public class CoPathCase {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append(String.format(
-            "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
+            "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
             accNo.replace("\"", "'"),
-            sdf.format(accessionDate),
-            sdf.format(collectionDate),
+            getAccessionDate(),
+            getCollectionDate(),
             empi.replace("\"", "'"),
+            demographics == null ? "" : demographics.getBirthDate(),
+            demographics == null ? "" : demographics.getDeathDate(),
+            demographics == null ? "" : demographics.ethnicity,
+            demographics == null ? "" : demographics.race,
+            demographics == null ? "" : demographics.ethnicGroup,
+            demographics == null ? "" : demographics.gender,
+            demographics == null ? "" : demographics.zipCode,
             finalDiagnosis == null ? "" : finalDiagnosis.replace("\"", "'"),
             getProcedureMap().get("Flow Cytometry") == null || getProcedureMap().get("Flow Cytometry").interp == null ? "" : getProcedureMap().get("Flow Cytometry").interp.replace("\"", "'"),
             karyotype == null ? "" : karyotype.replace("\"", "'"),
@@ -294,12 +309,12 @@ public class CoPathCase {
         sb.append(String.format(",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
           sebiaCaseSerum == null ? "" : sebiaCaseSerum.curve,
           sebiaCaseSerum == null || sebiaCaseSerum.sebiaFractions == null ? "" : sebiaCaseSerum.sebiaFractions,
-          sebiaCaseSerumNormalControl == null ? "" : sebiaCaseSerumNormalControl.curve,
-          sebiaCaseSerumNormalControl == null || sebiaCaseSerumNormalControl.sebiaFractions == null ? "" : sebiaCaseSerumNormalControl.sebiaFractions,
+          sebiaCaseSerumGelControl == null ? "" : sebiaCaseSerumGelControl.curve,
+          sebiaCaseSerumGelControl == null || sebiaCaseSerumGelControl.sebiaFractions == null ? "" : sebiaCaseSerumGelControl.sebiaFractions,
           sebiaCaseUrine == null ? "" : sebiaCaseUrine.curve,
           sebiaCaseUrine == null || sebiaCaseUrine.sebiaFractions == null? "" : sebiaCaseUrine.sebiaFractions,
-          sebiaCaseUrineNormalControl == null ? "" : sebiaCaseUrineNormalControl.curve,
-          sebiaCaseUrineNormalControl == null || sebiaCaseUrineNormalControl.sebiaFractions == null? "" : sebiaCaseUrineNormalControl.sebiaFractions
+          sebiaCaseUrineGelControl == null ? "" : sebiaCaseUrineGelControl.curve,
+          sebiaCaseUrineGelControl == null || sebiaCaseUrineGelControl.sebiaFractions == null? "" : sebiaCaseUrineGelControl.sebiaFractions
         ));
         return(sb.toString());
     }

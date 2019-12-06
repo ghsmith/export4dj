@@ -15,8 +15,8 @@ import java.util.List;
  */
 public class PathNetResultFinder {
     
-    private Connection conn;
-    private PreparedStatement pstmt1;
+    private final Connection conn;
+    private final PreparedStatement pstmt1;
 
     public PathNetResultFinder(Connection conn) throws SQLException {
         this.conn = conn;

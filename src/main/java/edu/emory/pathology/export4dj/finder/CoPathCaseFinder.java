@@ -7,9 +7,7 @@ import java.sql.SQLException;
 import edu.emory.pathology.export4dj.data.CoPathCase;
 import edu.emory.pathology.export4dj.data.CoPathCase.CoPathProcedure;
 import edu.emory.pathology.export4dj.data.CoPathCase.FishProbe;
-import edu.emory.pathology.export4dj.data.PathNetResult;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  *
@@ -17,11 +15,11 @@ import java.util.HashMap;
  */
 public class CoPathCaseFinder {
     
-    private Connection conn;
-    private PreparedStatement pstmt1;
-    private PreparedStatement pstmt2;
-    private PreparedStatement pstmt3;
-    private PreparedStatement pstmt4;
+    private final Connection conn;
+    private final PreparedStatement pstmt1;
+    private final PreparedStatement pstmt2;
+    private final PreparedStatement pstmt3;
+    private final PreparedStatement pstmt4;
 
     public CoPathCaseFinder(Connection conn) throws SQLException {
         this.conn = conn;
@@ -199,9 +197,11 @@ public class CoPathCaseFinder {
             coPathCase.pathNetResults = pathNetResultFinder.getPathNetResultsByEmpiProximateToCollectionDate(coPathCase.empi, coPathCase.collectionDate);
             if(coPathCase.getPathNetResultMap().get("SPEINTERP") != null && coPathCase.getPathNetResultMap().get("SPEINTERP").accNo != null) {
                 coPathCase.sebiaCaseSerum = sebiaCaseFinder.getSebiaCaseByAccNo(coPathCase.getPathNetResultMap().get("SPEINTERP").accNo);
+                coPathCase.sebiaCaseSerumGelControl = sebiaCaseFinder.getSebiaGelControlByAccNo(coPathCase.getPathNetResultMap().get("SPEINTERP").accNo);
             }
             if(coPathCase.getPathNetResultMap().get("Urine Protein Electrophoresis") != null && coPathCase.getPathNetResultMap().get("Urine Protein Electrophoresis").accNo != null) {
                 coPathCase.sebiaCaseUrine = sebiaCaseFinder.getSebiaCaseByAccNo(coPathCase.getPathNetResultMap().get("Urine Protein Electrophoresis").accNo);
+                coPathCase.sebiaCaseUrineGelControl = sebiaCaseFinder.getSebiaGelControlByAccNo(coPathCase.getPathNetResultMap().get("Urine Protein Electrophoresis").accNo);
             }
         }
         rs1.close();

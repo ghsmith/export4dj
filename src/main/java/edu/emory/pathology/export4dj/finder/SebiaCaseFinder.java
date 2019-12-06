@@ -78,18 +78,19 @@ public class SebiaCaseFinder {
        return sebiaCase;
    }
 
-   public SebiaCase getSebiaNormalControlCaseByAccNo(String accNo) {
-       SebiaCase sebiaCaseNormalControl = null;
+   public SebiaCase getSebiaGelControlByAccNo(String accNo) {
+       SebiaCase sebiaCaseGelControl = null;
        if(csvRecordsByAccNo.get(accNo) != null) {
            for(int seq = Integer.parseInt(csvRecordsByAccNo.get(accNo).get("seq")); seq >= 1; seq--) {
                CSVRecord csvRecord = csvNormalControlRecordsByRunDate.get(csvRecordsByAccNo.get(accNo).get("data_analisi") + "." + csvRecordsByAccNo.get(accNo).get("programma") + "." + seq);
                if(csvRecord != null) {
-                   sebiaCaseNormalControl = new SebiaCase(csvRecord);
+                   sebiaCaseGelControl = new SebiaCase(csvRecord);
+                   sebiaCaseGelControl.gelName = csvRecord.get("nominativo");
                    break;
                }
            }
        }
-       return sebiaCaseNormalControl;
+       return sebiaCaseGelControl;
    }
    
 }

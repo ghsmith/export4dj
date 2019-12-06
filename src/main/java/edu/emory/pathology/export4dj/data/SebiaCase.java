@@ -41,6 +41,8 @@ public class SebiaCase {
     @XmlAttribute
     public String gelKey;
     @XmlAttribute
+    public String gelName;
+    @XmlAttribute
     public String id;
     @XmlAttribute
     public String protein;
