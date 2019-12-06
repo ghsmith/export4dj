@@ -57,11 +57,11 @@ public class Demographics {
 
     @XmlAttribute
     public String getDeathDate() {
-        return sdf.format(this.deathDate);
+        return(this.deathDate == null ? "" : sdf.format(this.deathDate));
     }
 
     public void setDeathDate(String deathDate) throws ParseException {
-        this.deathDate = new Date(sdf.parse(deathDate).getTime());
+        this.deathDate = (deathDate == null || deathDate.length() == 0 ? null : new Date(sdf.parse(deathDate).getTime()));
     }
     
 }
