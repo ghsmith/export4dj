@@ -32,13 +32,13 @@ public class DemographicsFinder {
         );
         pstmt2 = connCdw.prepareStatement(
             "select                                                    "
-          + "  trunc(patient_birth_dt, 'YEAR') birth_dt,               "
-          + "  trunc(patient_death_dt, 'YEAR') death_dt,               "
+          + "  patient_birth_dt birth_dt,                              "
+          + "  patient_death_dt death_dt,                              "
           + "  ethnicity_cd ethnicity,                                 "
           + "  race_cd race,                                           "
           + "  ethnic_group_cd ethnic_group,                           "
           + "  gender_cd gender,                                       "
-          + "  substr(patient_address_zip_desc, 1, 3) || 'XX' zip_code "
+          + "  patient_address_zip_desc zip_code                       "
           + "from                                                      "
           + "  ehcvw.lkp_patient                                       "
           + "where                                                     "
