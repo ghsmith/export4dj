@@ -91,6 +91,8 @@ public class PathNetResultFinder {
           + ",'844756952' " // Urine Immunofixation Interp
           + ",'1513700'   " // Urine Immunoelectrophoresis Interp (NO LONGER USED)
 
+          + ",'1514076'   " // Free Kappa/Lambda Ratio
+                    
           + "          )                                                                                                                                                            "
           + "      ) lsrt on (lsrt.structured_result_type_key = frl.structured_result_type_key)                                                                                     "
           + "    where                                                                                                                                                              "
@@ -161,6 +163,8 @@ public class PathNetResultFinder {
           + ",'844756952' " // Urine Immunofixation Interp
           + ",'1513700'   " // Urine Immunoelectrophoresis Interp (NO LONGER USED)
 
+          + ",'1514076'   " // Free Kappa/Lambda Ratio
+                    
           + "      )                                                                                                                                                                "
           + "  ) lsrt                                                                                                                                                               "
           + "  left outer join proximate_lab_result_keys plrk on (plrk.structured_result_type_key = lsrt.structured_result_type_key)                                                "
@@ -209,6 +213,7 @@ public class PathNetResultFinder {
           + ",'Urine Protein Electrophoresis'     , 35 "
           + ",'Urine Immunofixation Interp'       , 36 "
           + ",'Urine Immunoelectrophoresis Interp', 37 "
+          + ",'Free Kappa/Lambda Ratio'           , 38 "
 
           + "  )                                                                                                                                                                    "
         );       

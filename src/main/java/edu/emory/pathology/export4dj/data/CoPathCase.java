@@ -242,7 +242,7 @@ public class CoPathCase {
                 String.format("FISH%1d-variation", probeNumber)
             ));
         }
-        for(int x = 1; x <= 37; x++) {
+        for(int x = 1; x <= 38; x++) {
             sb.append(String.format(",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
                 String.format("rslt%02d-resultName", x),
                 String.format("rslt%02d-collectionDateDelta", x),
