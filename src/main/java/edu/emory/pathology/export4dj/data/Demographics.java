@@ -63,5 +63,10 @@ public class Demographics {
     public void setDeathDate(String deathDate) throws ParseException {
         this.deathDate = (deathDate == null || deathDate.length() == 0 ? null : new Date(sdf.parse(deathDate).getTime()));
     }
+
+    @Override
+    public String toString() {
+        return "Demographics{" + "birthDate=" + birthDate + ", deathDate=" + deathDate + ", ethnicity=" + ethnicity + ", race=" + race + ", ethnicGroup=" + ethnicGroup + ", gender=" + gender + ", zipCode=" + zipCode + '}';
+    }
     
 }
