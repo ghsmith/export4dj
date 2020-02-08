@@ -2,10 +2,7 @@ package edu.emory.pathology.export4dj;
 
 import edu.emory.pathology.export4dj.data.CoPathCase;
 import edu.emory.pathology.export4dj.data.Export4DJ;
-import edu.emory.pathology.export4dj.finder.CoPathCaseFinder;
 import edu.emory.pathology.export4dj.finder.DemographicsFinder;
-import edu.emory.pathology.export4dj.finder.PathNetResultFinder;
-import edu.emory.pathology.export4dj.finder.SebiaCaseFinder;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

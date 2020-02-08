@@ -4,8 +4,12 @@ import edu.emory.pathology.export4dj.data.SebiaCase;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -38,6 +42,7 @@ import org.apache.commons.csv.CSVRecord;
 public class SebiaCaseFinder {
 
     public Map<String, CSVRecord> csvRecordsByAccNo;
+    public Map<String, CSVRecord> csvRecordsByRunDate;
     public Map<String, CSVRecord> csvNormalControlRecordsByRunDate;
     
     public SebiaCaseFinder(File csvIn) throws IOException {
@@ -45,6 +50,7 @@ public class SebiaCaseFinder {
         CSVParser csvParser = CSVParser.parse(csvIn, Charset.defaultCharset(), CSVFormat.DEFAULT.withFirstRecordAsHeader());
 
         csvRecordsByAccNo = new HashMap<>();
+        csvRecordsByRunDate = new HashMap<>();
         csvNormalControlRecordsByRunDate = new HashMap<>();
         for(CSVRecord csvRecord : csvParser) {
             if(("B".equals(csvRecord.get("programma")) || "R".equals(csvRecord.get("programma"))) && csvRecord.get("id") != null) {
@@ -64,6 +70,9 @@ public class SebiaCaseFinder {
                 }
                 if(csvRecord.get("nominativo").contains("#")) {
                     csvNormalControlRecordsByRunDate.put(csvRecord.get("data_analisi") + "." + csvRecord.get("programma") + "." + csvRecord.get("seq"), csvRecord);
+                }
+                else {
+                    csvRecordsByRunDate.put(csvRecord.get("data_analisi") + "." + csvRecord.get("programma") + "." + csvRecord.get("seq"), csvRecord);
                 }
             }
         }
@@ -92,5 +101,34 @@ public class SebiaCaseFinder {
        }
        return sebiaCaseGelControl;
    }
+
+    public SebiaCase getSebiaGelControlByGelKey(String gelKey) {
+        Pattern pattern = Pattern.compile("([^\\.]*)\\.([^\\.]*)\\.([^\\.]*)");
+        Matcher matcher = pattern.matcher(gelKey);
+        matcher.matches();
+        String data_analisi = matcher.group(1);
+        String programma = matcher.group(2);
+        String start_seq = matcher.group(3);
+        SebiaCase sebiaCaseGelControl = null;
+        for(int seq = Integer.parseInt(start_seq); seq >= 1; seq--) {
+            CSVRecord csvRecord = csvNormalControlRecordsByRunDate.get(data_analisi + "." + programma + "." + seq);
+            if(csvRecord != null) {
+                sebiaCaseGelControl = new SebiaCase(csvRecord);
+                sebiaCaseGelControl.gelName = csvRecord.get("nominativo");
+                break;
+            }
+        }
+        return sebiaCaseGelControl;
+    }
+      
+    public List<SebiaCase> getSebiaCasesByDate(String date) {
+        List<SebiaCase> sebiaCases = new ArrayList<>();
+        for(String key : csvRecordsByRunDate.keySet()) {
+            if(key.matches(String.format("%s[^\\.]*\\.B\\..*", date))) {
+                sebiaCases.add(new SebiaCase(csvRecordsByRunDate.get(key)));
+            }
+        }
+        return sebiaCases;
+    }
    
 }

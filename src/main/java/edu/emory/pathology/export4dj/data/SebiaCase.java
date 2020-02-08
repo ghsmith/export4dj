@@ -66,4 +66,10 @@ public class SebiaCase {
 
     public SebiaCase() {
     }    
+
+    @Override
+    public String toString() {
+        return "SebiaCase{" + "gelKey=" + gelKey + ", gelName=" + gelName + ", id=" + id + ", protein=" + protein + ", curve=" + curve + ", originalCurve=" + originalCurve + ", sebiaFractions=" + sebiaFractions + '}';
+    }
+    
 }
