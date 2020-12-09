@@ -7,7 +7,9 @@ import java.sql.SQLException;
 import edu.emory.pathology.export4dj.data.CoPathCase;
 import edu.emory.pathology.export4dj.data.CoPathCase.CoPathProcedure;
 import edu.emory.pathology.export4dj.data.CoPathCase.FishProbe;
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 public class CoPathCaseFinder {
     
     private final Connection conn;
+    private final PreparedStatement pstmt0;
     private final PreparedStatement pstmt1;
     private final PreparedStatement pstmt2;
     private final PreparedStatement pstmt3;
@@ -23,6 +26,19 @@ public class CoPathCaseFinder {
 
     public CoPathCaseFinder(Connection conn) throws SQLException {
         this.conn = conn;
+        pstmt0 = conn.prepareStatement(
+" select " +
+"   c_specimen.specnum_formatted " +
+" from " +
+"   c_specimen " +
+"   join r_medrec on(r_medrec.patdemog_id = c_specimen.patdemog_id) " +
+"   join r_pat_demograph on(r_pat_demograph.patdemog_id = r_medrec.patdemog_id) " +
+" where " +
+"   r_medrec.medrec_num_stripped = ? " +
+"   and r_pat_demograph.date_of_birth = ? " +
+" order by " +
+"   c_specimen.accession_date "
+        );
         pstmt1 = conn.prepareStatement(
             "select top 1                                                                                                                     "
           + "  c_specimen.specimen_id,                                                                                                        "
@@ -206,6 +222,18 @@ public class CoPathCaseFinder {
         }
         rs1.close();
         return coPathCase;
+    }
+
+    public List<CoPathCase> getCoPathCasesByFacilityMrnAndDob(String facilityMrn, Date dob, PathNetResultFinder pathNetResultFinder, SebiaCaseFinder sebiaCaseFinder) throws SQLException {
+        List<CoPathCase> coPathCases = new ArrayList<>();
+        pstmt0.setString(1, facilityMrn);
+        pstmt0.setDate(2, dob);
+        ResultSet rs = pstmt0.executeQuery();
+        while(rs.next()) {
+            System.out.println(facilityMrn + ": " + rs.getString(1));
+            coPathCases.add(getCoPathCaseByAccNo(rs.getString(1), pathNetResultFinder, sebiaCaseFinder));
+        }
+        return coPathCases;
     }
     
 }

@@ -3,9 +3,11 @@ package edu.emory.pathology.export4dj;
 import edu.emory.pathology.export4dj.data.CoPathCase;
 import edu.emory.pathology.export4dj.data.Export4DJ;
 import edu.emory.pathology.export4dj.finder.DemographicsFinder;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +15,8 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -46,13 +50,25 @@ public class AddDemographicsUtility {
         Unmarshaller unmarshaller = jc.createUnmarshaller();
         Export4DJ export4DJ = (Export4DJ)unmarshaller.unmarshal(new FileInputStream(args[0]));
 
+// temporary hack to get the subset columns in there            
+Map<String, String> mrnReaderLines = new HashMap<>();
+BufferedReader mrnReader = new BufferedReader(new FileReader(args[1]));
+String mrnReaderLine;
+while((mrnReaderLine = mrnReader.readLine()) != null) {
+    if(mrnReaderLine.contains(", -->, \"")) {
+        mrnReaderLines.put(mrnReaderLine.split(",")[8].replaceAll("\"", ""), mrnReaderLine.split(",")[0] + "," + mrnReaderLine.split(",")[1] + "," + mrnReaderLine.split(",")[2] + "," + mrnReaderLine.split(",")[3]);
+    }
+}
+        
         PrintWriter accNoWriter = new PrintWriter(new FileWriter(new File(args[0].replace(".xml", "") + ".with_demographics.csv")));
-        accNoWriter.println(CoPathCase.toStringHeader());
+        accNoWriter.println("Pt No,record_id,dob,date of dx,," + CoPathCase.toStringHeader());
 
         for(CoPathCase cpc : export4DJ.coPathCases) {
             System.out.println(cpc.accNo);
             cpc.demographics = df.getDemographicsByEmpiAndAccNo(cpc.empi, cpc.accNo);
-            accNoWriter.println(cpc);
+            
+// temporary hack to get the subset columns in there
+            accNoWriter.println(mrnReaderLines.get(cpc.empi) + ", -->, " + cpc);
             accNoWriter.flush();
         }
 
