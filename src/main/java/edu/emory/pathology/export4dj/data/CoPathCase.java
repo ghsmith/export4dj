@@ -192,6 +192,19 @@ public class CoPathCase {
     public SebiaCase sebiaCaseUrine;
     public SebiaCase sebiaCaseUrineGelControl;
 
+    @XmlAttribute
+    public String searchAccNo;
+    @XmlAttribute
+    public String searchPtNo;
+    @XmlAttribute
+    public String searchRecordId;
+    @XmlTransient
+    public Date searchDob;
+    @XmlTransient
+    public Date searchDateOfDx;
+    public String diagnosisCd;
+    public String diagnosisDesc;
+    
     public CoPathCase() {
     }
 
@@ -217,7 +230,14 @@ public class CoPathCase {
 
     public static String toStringHeader() {
         StringBuffer sb = new StringBuffer();
-        sb.append(String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
+        sb.append(String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
+            "searchAccNo",
+            "searchPtNo",
+            "searchRecordId",
+            "searchDob",
+            "searchDateOfDx",
+            "diagnosisCd",
+            "diagnosisDesc",
             "accNo",
             "accDate",
             "collDate",
@@ -269,7 +289,14 @@ public class CoPathCase {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append(String.format(
-            "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
+            "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
+            searchAccNo == null ? "" : searchAccNo,
+            searchPtNo == null ? "" : searchPtNo,
+            searchRecordId == null ? "" : searchRecordId,
+            getSearchDob(),
+            getSearchDateOfDx(),
+            diagnosisCd == null ? "" : diagnosisCd,
+            diagnosisDesc == null ? "" : diagnosisDesc,
             accNo.replace("\"", "'"),
             getAccessionDate(),
             getCollectionDate(),
@@ -369,5 +396,34 @@ public class CoPathCase {
         }
         return pathNetResultMap;
     }
+
+    @XmlAttribute
+    public String getSearchDob() {
+        if(searchDob == null) {
+            return "";
+        }
+        return sdf.format(this.searchDob);
+    }
+
+    public void setSearchDob(String searchDob) throws ParseException {
+        if(searchDob != null && searchDob.length() > 0) {
+            this.searchDob = new Date(sdf.parse(searchDob).getTime());
+        }
+    }
+    
+    @XmlAttribute
+    public String getSearchDateOfDx() {
+        if(searchDateOfDx == null) {
+            return "";
+        }
+        return sdf.format(this.searchDateOfDx);
+    }
+
+    public void setSearchDateOfDx(String searchDateOfDx) throws ParseException {
+        if(searchDateOfDx != null && searchDateOfDx.length() > 0) {
+            this.searchDateOfDx = new Date(sdf.parse(searchDateOfDx).getTime());
+        }
+    }
+
     
 }
