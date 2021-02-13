@@ -3,6 +3,7 @@ package edu.emory.pathology.export4dj;
 import edu.emory.pathology.export4dj.data.CoPathCase;
 import edu.emory.pathology.export4dj.data.Export4DJ;
 import edu.emory.pathology.export4dj.finder.CoPathCaseFinder;
+import edu.emory.pathology.export4dj.finder.DemographicsFinder;
 import edu.emory.pathology.export4dj.finder.PathNetResultFinder;
 import edu.emory.pathology.export4dj.finder.SebiaCaseFinder;
 import java.io.BufferedReader;
@@ -48,8 +49,10 @@ public class DumpUtility {
 
         CoPathCaseFinder cpcf = new CoPathCaseFinder(connCoPath);
         PathNetResultFinder pnrf = new PathNetResultFinder(connCdw);
+        DemographicsFinder df = new DemographicsFinder(connCdw, connCoPath);
 
-        SebiaCaseFinder scf = new SebiaCaseFinder(new File(args[1]));
+        //SebiaCaseFinder scf = new SebiaCaseFinder(new File(args[1]));
+        SebiaCaseFinder scf = null;
         
         Export4DJ export4DJ = new Export4DJ();
         export4DJ.coPathCases = new ArrayList<>();
@@ -59,11 +62,25 @@ public class DumpUtility {
         accNoWriter.println(CoPathCase.toStringHeader());
         String accNoReaderLine;
         while((accNoReaderLine = accNoReader.readLine()) != null) {
-            String accNo = accNoReaderLine.split(",")[0];
-            CoPathCase coPathCase = cpcf.getCoPathCaseByAccNo(accNo, pnrf, scf);
-            export4DJ.coPathCases.add(coPathCase);
-            accNoWriter.println(coPathCase);
-            accNoWriter.flush();
+            try {
+                String accNo = accNoReaderLine.split(",")[0];
+                System.out.print(accNo);
+                CoPathCase coPathCase = cpcf.getCoPathCaseByAccNo(accNo, pnrf, scf);
+                if(coPathCase != null) {
+                    export4DJ.coPathCases.add(coPathCase);
+                    coPathCase.searchAccNo = accNo;
+                    coPathCase.demographics = df.getDemographicsByEmpiAndAccNo(coPathCase.empi, coPathCase.accNo);
+                    accNoWriter.println(coPathCase);
+                    accNoWriter.flush();
+                    System.out.println(": found");
+                }
+                else {
+                    System.out.println(": NOT found");
+                }
+            }
+            catch(Exception e) {
+                e.printStackTrace();
+            }
         }
         accNoReader.close();
         accNoWriter.close();

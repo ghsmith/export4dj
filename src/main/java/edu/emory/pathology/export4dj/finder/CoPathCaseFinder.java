@@ -19,6 +19,7 @@ public class CoPathCaseFinder {
     
     private final Connection conn;
     private final PreparedStatement pstmt0;
+    private final PreparedStatement pstmt0_noDob;
     private final PreparedStatement pstmt1;
     private final PreparedStatement pstmt2;
     private final PreparedStatement pstmt3;
@@ -36,6 +37,18 @@ public class CoPathCaseFinder {
 " where " +
 "   r_medrec.medrec_num_stripped = ? " +
 "   and r_pat_demograph.date_of_birth = ? " +
+" order by " +
+"   c_specimen.accession_date "
+        );
+        pstmt0_noDob = conn.prepareStatement(
+" select " +
+"   c_specimen.specnum_formatted " +
+" from " +
+"   c_specimen " +
+"   join r_medrec on(r_medrec.patdemog_id = c_specimen.patdemog_id) " +
+"   join r_pat_demograph on(r_pat_demograph.patdemog_id = r_medrec.patdemog_id) " +
+" where " +
+"   r_medrec.medrec_num_stripped = ? " +
 " order by " +
 "   c_specimen.accession_date "
         );
@@ -211,14 +224,14 @@ public class CoPathCaseFinder {
             }
             rs3.close();
             coPathCase.pathNetResults = pathNetResultFinder.getPathNetResultsByEmpiProximateToCollectionDate(coPathCase.empi, coPathCase.collectionDate);
-            if(coPathCase.getPathNetResultMap().get("SPEINTERP") != null && coPathCase.getPathNetResultMap().get("SPEINTERP").accNo != null) {
-                coPathCase.sebiaCaseSerum = sebiaCaseFinder.getSebiaCaseByAccNo(coPathCase.getPathNetResultMap().get("SPEINTERP").accNo);
-                coPathCase.sebiaCaseSerumGelControl = sebiaCaseFinder.getSebiaGelControlByAccNo(coPathCase.getPathNetResultMap().get("SPEINTERP").accNo);
-            }
-            if(coPathCase.getPathNetResultMap().get("Urine Protein Electrophoresis") != null && coPathCase.getPathNetResultMap().get("Urine Protein Electrophoresis").accNo != null) {
-                coPathCase.sebiaCaseUrine = sebiaCaseFinder.getSebiaCaseByAccNo(coPathCase.getPathNetResultMap().get("Urine Protein Electrophoresis").accNo);
-                coPathCase.sebiaCaseUrineGelControl = sebiaCaseFinder.getSebiaGelControlByAccNo(coPathCase.getPathNetResultMap().get("Urine Protein Electrophoresis").accNo);
-            }
+            //if(coPathCase.getPathNetResultMap().get("SPEINTERP") != null && coPathCase.getPathNetResultMap().get("SPEINTERP").accNo != null) {
+            //    coPathCase.sebiaCaseSerum = sebiaCaseFinder.getSebiaCaseByAccNo(coPathCase.getPathNetResultMap().get("SPEINTERP").accNo);
+            //    coPathCase.sebiaCaseSerumGelControl = sebiaCaseFinder.getSebiaGelControlByAccNo(coPathCase.getPathNetResultMap().get("SPEINTERP").accNo);
+            //}
+            //if(coPathCase.getPathNetResultMap().get("Urine Protein Electrophoresis") != null && coPathCase.getPathNetResultMap().get("Urine Protein Electrophoresis").accNo != null) {
+            //    coPathCase.sebiaCaseUrine = sebiaCaseFinder.getSebiaCaseByAccNo(coPathCase.getPathNetResultMap().get("Urine Protein Electrophoresis").accNo);
+            //    coPathCase.sebiaCaseUrineGelControl = sebiaCaseFinder.getSebiaGelControlByAccNo(coPathCase.getPathNetResultMap().get("Urine Protein Electrophoresis").accNo);
+            //}
         }
         rs1.close();
         return coPathCase;
@@ -236,4 +249,15 @@ public class CoPathCaseFinder {
         return coPathCases;
     }
     
+    public List<CoPathCase> getCoPathCasesByFacilityMrn(String facilityMrn, PathNetResultFinder pathNetResultFinder, SebiaCaseFinder sebiaCaseFinder) throws SQLException {
+        List<CoPathCase> coPathCases = new ArrayList<>();
+        pstmt0_noDob.setString(1, facilityMrn);
+        ResultSet rs = pstmt0_noDob.executeQuery();
+        while(rs.next()) {
+            System.out.println(facilityMrn + ": " + rs.getString(1));
+            coPathCases.add(getCoPathCaseByAccNo(rs.getString(1), pathNetResultFinder, sebiaCaseFinder));
+        }
+        return coPathCases;
+    }
+
 }

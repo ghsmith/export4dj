@@ -61,7 +61,7 @@ while((mrnReaderLine = mrnReader.readLine()) != null) {
 }
         
         PrintWriter accNoWriter = new PrintWriter(new FileWriter(new File(args[0].replace(".xml", "") + ".with_demographics.csv")));
-        accNoWriter.println("Pt No,record_id,dob,date of dx,," + CoPathCase.toStringHeader());
+        accNoWriter.println("Pt No,record_id,dob,date of dx, , " + CoPathCase.toStringHeader());
 
         for(CoPathCase cpc : export4DJ.coPathCases) {
             System.out.println(cpc.accNo);
