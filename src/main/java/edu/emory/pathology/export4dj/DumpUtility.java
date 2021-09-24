@@ -16,6 +16,8 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -31,7 +33,7 @@ import javax.xml.transform.stream.StreamResult;
  * @author Geoffrey H. Smith
  */
 public class DumpUtility {
-    
+
     public static void main(String[] args) throws IOException, ClassNotFoundException, SQLException, JAXBException {
 
         Properties priv = new Properties();
@@ -43,6 +45,8 @@ public class DumpUtility {
         Connection connCdw = DriverManager.getConnection(priv.getProperty("connCdw.url"), priv.getProperty("connCdw.u"), priv.getProperty("connCdw.p"));
         connCdw.setAutoCommit(false);
         connCdw.createStatement().execute("set role hnam_sel_all");
+
+        PreparedStatement pstmtDx = connCdw.prepareStatement("select diagnosis_primary_hosp_cd, (select diagnosis_desc from ehcvw.lkp_diagnosis where diagnosis_key = redhp.diagnosis_key) x  from ehcvw.lkp_encounter le join ehcvw.rel_encounter_dx_hosp_primary redhp on(le.encounter_key = redhp.encounter_extension_key) where encounter_nbr = ?");
         
         Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
         Connection connCoPath = DriverManager.getConnection(priv.getProperty("connCoPath.url"));
@@ -66,6 +70,12 @@ public class DumpUtility {
                 String accNo = accNoReaderLine.split(",")[0];
                 System.out.print(accNo);
                 CoPathCase coPathCase = cpcf.getCoPathCaseByAccNo(accNo, pnrf, scf);
+                pstmtDx.setString(1, coPathCase.fin);
+                ResultSet rsDx = pstmtDx.executeQuery();
+                if(rsDx.next()) {
+                    coPathCase.diagnosisCd = rsDx.getString(1);
+                    coPathCase.diagnosisDesc = rsDx.getString(2);
+                }
                 if(coPathCase != null) {
                     export4DJ.coPathCases.add(coPathCase);
                     coPathCase.searchAccNo = accNo;

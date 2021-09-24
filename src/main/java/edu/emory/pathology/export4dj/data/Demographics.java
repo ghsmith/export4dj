@@ -22,6 +22,8 @@ public class Demographics {
     public Date birthDate;
     @XmlTransient
     public Date deathDate;
+    @XmlTransient
+    public Date latestDischargeDate;
     @XmlAttribute
     public String ethnicity;
     @XmlAttribute
@@ -39,6 +41,7 @@ public class Demographics {
     public Demographics(ResultSet rs) throws SQLException {
         this.birthDate = rs.getDate("birth_dt");
         this.deathDate = rs.getDate("death_dt");
+        this.latestDischargeDate = rs.getDate("latest_discharge_dt");
         this.ethnicity = rs.getString("ethnicity");
         this.race = rs.getString("race");
         this.ethnicGroup = rs.getString("ethnic_group");
@@ -64,4 +67,13 @@ public class Demographics {
         this.deathDate = (deathDate == null || deathDate.length() == 0 ? null : new Date(sdf.parse(deathDate).getTime()));
     }
     
+    @XmlAttribute
+    public String getLatestDischargeDate() {
+        return(this.latestDischargeDate == null ? "" : sdf.format(this.latestDischargeDate));
+    }
+
+    public void setLatestDischargeDate(String latestDischargeDate) throws ParseException {
+        this.latestDischargeDate = (latestDischargeDate == null || latestDischargeDate.length() == 0 ? null : new Date(sdf.parse(latestDischargeDate).getTime()));
+    }
+
 }

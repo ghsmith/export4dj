@@ -11,7 +11,10 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.Result;
+import javax.xml.transform.stream.StreamResult;
 
 /**
  *
@@ -25,8 +28,16 @@ public class Xml2Csv {
         Unmarshaller unmarshaller = jc.createUnmarshaller();
         Export4DJ export4DJ = (Export4DJ)unmarshaller.unmarshal(new FileInputStream(args[0]));
         System.out.println(export4DJ.coPathCases.size() + " loaded");
+        jc.generateSchema(new SchemaOutputResolver() {
+            public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
+                File file = new File("export4dj.xsd");
+                StreamResult result = new StreamResult(file);
+                result.setSystemId(file.toURI().toURL().toString());
+                return result;
+            }                
+        });
 
-        PrintWriter accNoWriter = new PrintWriter(new FileWriter(new File(args[0].replace(".xml", "") + ".csv")));
+        PrintWriter accNoWriter = new PrintWriter(new FileWriter(new File(args[0].replace(".xml.new", ".csv"))));
         accNoWriter.println(CoPathCase.toStringHeader());
         for(CoPathCase coPathCase : export4DJ.coPathCases) {
             accNoWriter.println(coPathCase);
