@@ -17,6 +17,8 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -47,6 +49,8 @@ public class DumpByMrnAndDobUtility {
         Connection connCdw = DriverManager.getConnection(priv.getProperty("connCdw.url"), priv.getProperty("connCdw.u"), priv.getProperty("connCdw.p"));
         connCdw.setAutoCommit(false);
         connCdw.createStatement().execute("set role hnam_sel_all");
+
+        PreparedStatement pstmtDx = connCdw.prepareStatement("select diagnosis_primary_hosp_cd, (select diagnosis_desc from ehcvw.lkp_diagnosis where diagnosis_key = redhp.diagnosis_key) x  from ehcvw.lkp_encounter le join ehcvw.rel_encounter_dx_hosp_primary redhp on(le.encounter_key = redhp.encounter_extension_key) where encounter_nbr = ?");
         
         Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
         Connection connCoPath = DriverManager.getConnection(priv.getProperty("connCoPath.url"));
@@ -87,6 +91,12 @@ public class DumpByMrnAndDobUtility {
                     coPathCase.searchPtNo = mrnReaderLine.split(",")[0];
                     coPathCase.searchRecordId = mrnReaderLine.split(",")[1];
                     coPathCase.searchDob = dob;
+                    pstmtDx.setString(1, coPathCase.fin);
+                    ResultSet rsDx = pstmtDx.executeQuery();
+                    if(rsDx.next()) {
+                        coPathCase.diagnosisCd = rsDx.getString(1);
+                        coPathCase.diagnosisDesc = rsDx.getString(2);
+                    }
                     if(mrnReaderLine.split(",").length >= 4 && mrnReaderLine.split(",")[3] != null && mrnReaderLine.split(",")[3].length() > 0) {
                         coPathCase.searchDateOfDx = new Date(sdf.parse(mrnReaderLine.split(",")[3]).getTime());
                     }

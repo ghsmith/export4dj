@@ -32,10 +32,10 @@ public class Unmarshal {
             priv.load(inputStream);
         }
         
-        //Class.forName("oracle.jdbc.driver.OracleDriver");
-        //Connection connCdw = DriverManager.getConnection(priv.getProperty("connCdw.url"), priv.getProperty("connCdw.u"), priv.getProperty("connCdw.p"));
-        //connCdw.setAutoCommit(false);
-        //connCdw.createStatement().execute("set role hnam_sel_all");
+        Class.forName("oracle.jdbc.driver.OracleDriver");
+        Connection connCdw = DriverManager.getConnection(priv.getProperty("connCdw.url"), priv.getProperty("connCdw.u"), priv.getProperty("connCdw.p"));
+        connCdw.setAutoCommit(false);
+        connCdw.createStatement().execute("set role hnam_sel_all");
         
         Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
         Connection connCoPath = DriverManager.getConnection(priv.getProperty("connCoPath.url"));
@@ -45,41 +45,41 @@ public class Unmarshal {
         Export4DJ export4DJ = (Export4DJ)unmarshaller.unmarshal(new FileInputStream(args[0]));
         System.out.println(export4DJ.coPathCases.size() + " loaded");
 
-        //PreparedStatement pstmtEnc = connCoPath.prepareStatement("select r_encounter.encounter_num from c_specimen join r_encounter on (c_specimen.encounter_id = r_encounter.encounter_id) where c_specimen.specnum_formatted = ?");
-        //PreparedStatement pstmtDx = connCdw.prepareStatement("select diagnosis_primary_hosp_cd, (select diagnosis_desc from ehcvw.lkp_diagnosis where diagnosis_key = redhp.diagnosis_key) x  from ehcvw.lkp_encounter le join ehcvw.rel_encounter_dx_hosp_primary redhp on(le.encounter_key = redhp.encounter_extension_key) where encounter_nbr = ?");
-        CoPathCaseFinder cpcf = new CoPathCaseFinder(connCoPath);
+        PreparedStatement pstmtEnc = connCoPath.prepareStatement("select r_encounter.encounter_num from c_specimen join r_encounter on (c_specimen.encounter_id = r_encounter.encounter_id) where c_specimen.specnum_formatted = ?");
+        PreparedStatement pstmtDx = connCdw.prepareStatement("select diagnosis_primary_hosp_cd, (select diagnosis_desc from ehcvw.lkp_diagnosis where diagnosis_key = redhp.diagnosis_key) x  from ehcvw.lkp_encounter le join ehcvw.rel_encounter_dx_hosp_primary redhp on(le.encounter_key = redhp.encounter_extension_key) where encounter_nbr = ?");
+        //CoPathCaseFinder cpcf = new CoPathCaseFinder(connCoPath);
         
         int x = 0;
         for(CoPathCase coPathCase : export4DJ.coPathCases) {
             x++;
-            //String enc = null;
-            //String dx = null;
-            //String desc = null;
-            //pstmtEnc.setString(1, coPathCase.accNo);
-            //ResultSet rsEnc = pstmtEnc.executeQuery();
-            //if(rsEnc.next()) {
-            //    enc = rsEnc.getString(1);
-            //}
-            //rsEnc.close();
-            //if(enc != null && enc.length() > 0) {
-            //    pstmtDx.setString(1, enc);
-            //    ResultSet rsDx = pstmtDx.executeQuery();
-            //    if(rsDx.next()) {
-            //        dx = rsDx.getString(1);
-            //        desc = rsDx.getString(2);
-            //    }
-            //    rsDx.close();
-            //}
+            String enc = null;
+            String dx = null;
+            String desc = null;
+            pstmtEnc.setString(1, coPathCase.accNo);
+            ResultSet rsEnc = pstmtEnc.executeQuery();
+            if(rsEnc.next()) {
+                enc = rsEnc.getString(1);
+            }
+            rsEnc.close();
+            if(enc != null && enc.length() > 0) {
+                pstmtDx.setString(1, enc);
+                ResultSet rsDx = pstmtDx.executeQuery();
+                if(rsDx.next()) {
+                    dx = rsDx.getString(1);
+                    desc = rsDx.getString(2);
+                    coPathCase.diagnosisCd = dx;
+                    coPathCase.diagnosisDesc = desc;
+                }
+                rsDx.close();
+            }
             
-            //System.out.println(String.format("%-15s %-15s %-10s %s", coPathCase.accNo, enc, dx, desc));
-            //coPathCase.diagnosisCd = dx;
-            //coPathCase.diagnosisDesc = desc;
-            CoPathCase newCase = cpcf.getCoPathXXX(coPathCase.accNo);
-            if(newCase != null && newCase.countsAndDiffs != null) { coPathCase.countsAndDiffs = newCase.countsAndDiffs; }
-            System.out.println(String.format("%d/%d. %s", x, export4DJ.coPathCases.size(), coPathCase.accNo));
+            System.out.println(String.format("%6d. %-15s %-15s %-10s %s", x, coPathCase.accNo, enc, dx, desc));
+        //    CoPathCase newCase = cpcf.getCoPathXXX(coPathCase.accNo);
+        //    if(newCase != null && newCase.countsAndDiffs != null) { coPathCase.countsAndDiffs = newCase.countsAndDiffs; }
+        //    System.out.println(String.format("%d/%d. %s", x, export4DJ.coPathCases.size(), coPathCase.accNo));
         }
 
-        //connCdw.close();
+        connCdw.close();
         connCoPath.close();
         
         Marshaller m = jc.createMarshaller();

@@ -345,15 +345,15 @@ public class CoPathCase {
             karyotype == null ? "" : karyotype.replace("\"", "'"),
             getProcedureMap().get("Chromosome Analysis") == null || getProcedureMap().get("Chromosome Analysis").interp == null ? "" : getProcedureMap().get("Chromosome Analysis").interp.replace("\"", "'"),
             (getProcedureMap().get("Multiple Myeloma Panel, FISH") == null || getProcedureMap().get("Multiple Myeloma Panel, FISH").interp == null ? "" : "\n\n[MM Panel]\n\n" + getProcedureMap().get("Multiple Myeloma Panel, FISH").interp.replace("\"", "'"))
-            + (getProcedureMap().get("") == null || getProcedureMap().get("t(4;14) and t(14;16) Panel, FISH").interp == null ? "" : "\n\n[MM Panel Extended]\n\n" + getProcedureMap().get("t(4;14) and t(14;16) Panel, FISH").interp.replace("\"", "'"))
+            + (getProcedureMap().get("t(4;14) and t(14;16) Panel, FISH") == null || getProcedureMap().get("t(4;14) and t(14;16) Panel, FISH").interp == null ? "" : "\n\n[MM Panel Extended]\n\n" + getProcedureMap().get("t(4;14) and t(14;16) Panel, FISH").interp.replace("\"", "'"))
             + (getProcedureMap().get("AML Panel, FISH") == null || getProcedureMap().get("AML Panel, FISH").interp == null ? "" : "\n\n[AML Panel]\n\n" + getProcedureMap().get("AML Panel, FISH").interp.replace("\"", "'"))
             + (getProcedureMap().get("MDS Panel, FISH") == null || getProcedureMap().get("MDS Panel, FISH").interp == null ? "" : "\n\n[MDS Panel]\n\n" + getProcedureMap().get("MDS Panel, FISH").interp.replace("\"", "'")),
-            (getProcedureMap().get("Multiple Myeloma Panel, FISH") == null || getProcedureMap().get("Multiple Myeloma Panel, FISH").comment == null ? "" : "\n\n[MM Extended]\n\n" + getProcedureMap().get("Multiple Myeloma Panel, FISH").comment.replace("\"", "'"))
+            (getProcedureMap().get("Multiple Myeloma Panel, FISH") == null || getProcedureMap().get("Multiple Myeloma Panel, FISH").comment == null ? "" : "\n\n[MM Panel]\n\n" + getProcedureMap().get("Multiple Myeloma Panel, FISH").comment.replace("\"", "'"))
             + (getProcedureMap().get("t(4;14) and t(14;16) Panel, FISH") == null || getProcedureMap().get("t(4;14) and t(14;16) Panel, FISH").comment == null ? "" : "\n\n[MM Panel Extended]\n\n" + getProcedureMap().get("t(4;14) and t(14;16) Panel, FISH").comment.replace("\"", "'"))
             + (getProcedureMap().get("AML Panel, FISH") == null || getProcedureMap().get("AML Panel, FISH").comment == null ? "" : "\n\n[AML Panel]\n\n" + getProcedureMap().get("AML Panel, FISH").comment.replace("\"", "'"))
             + (getProcedureMap().get("MDS Panel, FISH") == null || getProcedureMap().get("MDS Panel, FISH").comment == null ? "" : "\n\n[MDS Panel]\n\n" + getProcedureMap().get("MDS Panel, FISH").comment.replace("\"", "'"))
         ));
-        for(int probeNumber = 1; probeNumber <=14; probeNumber++) {
+        for(int probeNumber = 1; probeNumber <=18; probeNumber++) {
             sb.append(String.format(",\"%s\",\"%s\"",
                 getFishProbeMap().get(probeNumber) == null ? "" : getFishProbeMap().get(probeNumber).probeName,
                 getFishProbeMap().get(probeNumber) == null ? "" : getFishProbeMap().get(probeNumber).getVariationConcatenated()

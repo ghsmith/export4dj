@@ -260,7 +260,7 @@ public class CoPathCaseFinder {
           + "  and 9 + cast(substring(dsc.name, charindex('(', dsc.name) + 1, 1) as int) = ?                          "
           + "union all                                                                                                "
           + "select                                                                                                   "
-          + "  9 + cast(substring(dsc.name, charindex('(', dsc.name) + 1, 1) as int) as probe_no,                     "
+          + "  14 + cast(substring(dsc.name, charindex('(', dsc.name) + 1, 1) as int) as probe_no,                     "
           + "  dsc.abbr as item,                                                                                      "
           + "  dsc.name as item_name,                                                                                 "
           + "  dsv.abbr as val,                                                                                       "
@@ -335,6 +335,8 @@ public class CoPathCaseFinder {
                 pstmt4.setInt(4, fishProbe.probeNumber);
                 pstmt4.setString(5, coPathCase.specimenId);
                 pstmt4.setInt(6, fishProbe.probeNumber);
+                pstmt4.setString(7, coPathCase.specimenId);
+                pstmt4.setInt(8, fishProbe.probeNumber);
                 ResultSet rs4 = pstmt4.executeQuery();
                 while(rs4.next()) {
                     fishProbe.setVariationProperties(rs4);
