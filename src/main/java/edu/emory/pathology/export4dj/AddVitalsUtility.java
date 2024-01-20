@@ -60,7 +60,6 @@ public class AddVitalsUtility {
         int x = 0;
         for(CoPathCase coPathCase : export4DJ.coPathCases) {
             System.out.println(coPathCase.accNo);
-            if(x++ > 20) { break; }
             coPathCase.vitals = vf.getVitalsByEmpiProximateToCollectionDate(coPathCase.empi, coPathCase.collectionDate);
         }
         connCdw.close();
