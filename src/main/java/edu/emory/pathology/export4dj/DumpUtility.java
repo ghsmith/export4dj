@@ -93,9 +93,13 @@ public class DumpUtility {
                 
                 if(coPathCase == null) {
 
+                    System.out.print(".");
                     coPathCase = cpcf.getCoPathCaseByAccNo(accNo, pnrf, scf);
+                    System.out.print(".");
                     pstmtDx.setString(1, coPathCase.fin);
+                    System.out.print(".");
                     ResultSet rsDx = pstmtDx.executeQuery();
+                    System.out.print(".");
                     if(rsDx.next()) {
                         coPathCase.diagnosisCd = rsDx.getString(1);
                         coPathCase.diagnosisDesc = rsDx.getString(2);
@@ -103,7 +107,9 @@ public class DumpUtility {
                     if(coPathCase != null) {
                         export4DJ.coPathCases.add(coPathCase);
                         coPathCase.searchAccNo = accNo;
+                        System.out.print(".");
                         coPathCase.demographics = df.getDemographicsByEmpiAndAccNo(coPathCase.empi, coPathCase.accNo);
+                        System.out.print(".");
                         accNoWriter.println(coPathCase);
                         accNoWriter.flush();
                         System.out.println(": found");
