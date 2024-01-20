@@ -67,7 +67,7 @@ public class DumpUtility {
         //pickup where we left off
         JAXBContext jc = JAXBContext.newInstance(new Class[] { Export4DJ.class });
         Unmarshaller unmarshaller = jc.createUnmarshaller();
-        Export4DJ export4DJ = (Export4DJ)unmarshaller.unmarshal(new FileInputStream(args[0] + ".xml"));
+        Export4DJ export4DJ = (Export4DJ)unmarshaller.unmarshal(new FileInputStream(args[0] + ".export4dj.xml"));
         System.out.println(export4DJ.coPathCases.size() + " loaded");
         
         BufferedReader accNoReader = new BufferedReader(new FileReader(args[0]));
