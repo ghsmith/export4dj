@@ -8,6 +8,7 @@ import edu.emory.pathology.export4dj.finder.PathNetResultFinder;
 import edu.emory.pathology.export4dj.finder.SebiaCaseFinder;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -25,6 +26,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.SchemaOutputResolver;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 
@@ -58,8 +60,15 @@ public class DumpUtility {
         //SebiaCaseFinder scf = new SebiaCaseFinder(new File(args[1]));
         SebiaCaseFinder scf = null;
         
-        Export4DJ export4DJ = new Export4DJ();
-        export4DJ.coPathCases = new ArrayList<>();
+        // new
+        //Export4DJ export4DJ = new Export4DJ();
+        //export4DJ.coPathCases = new ArrayList<>();
+
+        //pickup where we left off
+        JAXBContext jc = JAXBContext.newInstance(new Class[] { Export4DJ.class });
+        Unmarshaller unmarshaller = jc.createUnmarshaller();
+        Export4DJ export4DJ = (Export4DJ)unmarshaller.unmarshal(new FileInputStream(args[0] + ".xml"));
+        System.out.println(export4DJ.coPathCases.size() + " loaded");
         
         BufferedReader accNoReader = new BufferedReader(new FileReader(args[0]));
         PrintWriter accNoWriter = new PrintWriter(new FileWriter(new File(args[0].replace(".csv", "") + ".export4dj.csv")));
@@ -67,26 +76,44 @@ public class DumpUtility {
         String accNoReaderLine;
         while((accNoReaderLine = accNoReader.readLine()) != null) {
             try {
-                String accNo = accNoReaderLine.split(",")[0];
+                String accNo = accNoReaderLine.split(",")[0].trim();
                 System.out.print(accNo);
-                CoPathCase coPathCase = cpcf.getCoPathCaseByAccNo(accNo, pnrf, scf);
-                pstmtDx.setString(1, coPathCase.fin);
-                ResultSet rsDx = pstmtDx.executeQuery();
-                if(rsDx.next()) {
-                    coPathCase.diagnosisCd = rsDx.getString(1);
-                    coPathCase.diagnosisDesc = rsDx.getString(2);
+                
+                CoPathCase coPathCase = null;
+
+                for(CoPathCase candidateCoPathCase : export4DJ.coPathCases) {
+                    if(candidateCoPathCase.accNo.equals(accNo)) {
+                        coPathCase = candidateCoPathCase;
+                        accNoWriter.println(coPathCase);
+                        accNoWriter.flush();
+                        System.out.println(": found");
+                        break;
+                    }
                 }
-                if(coPathCase != null) {
-                    export4DJ.coPathCases.add(coPathCase);
-                    coPathCase.searchAccNo = accNo;
-                    coPathCase.demographics = df.getDemographicsByEmpiAndAccNo(coPathCase.empi, coPathCase.accNo);
-                    accNoWriter.println(coPathCase);
-                    accNoWriter.flush();
-                    System.out.println(": found");
+                
+                if(coPathCase == null) {
+
+                    coPathCase = cpcf.getCoPathCaseByAccNo(accNo, pnrf, scf);
+                    pstmtDx.setString(1, coPathCase.fin);
+                    ResultSet rsDx = pstmtDx.executeQuery();
+                    if(rsDx.next()) {
+                        coPathCase.diagnosisCd = rsDx.getString(1);
+                        coPathCase.diagnosisDesc = rsDx.getString(2);
+                    }
+                    if(coPathCase != null) {
+                        export4DJ.coPathCases.add(coPathCase);
+                        coPathCase.searchAccNo = accNo;
+                        coPathCase.demographics = df.getDemographicsByEmpiAndAccNo(coPathCase.empi, coPathCase.accNo);
+                        accNoWriter.println(coPathCase);
+                        accNoWriter.flush();
+                        System.out.println(": found");
+                    }
+                    else {
+                        System.out.println(": NOT found");
+                    }
+                    
                 }
-                else {
-                    System.out.println(": NOT found");
-                }
+                
             }
             catch(Exception e) {
                 e.printStackTrace();
@@ -98,7 +125,7 @@ public class DumpUtility {
         connCoPath.close();
         connCdw.close();
 
-        JAXBContext jc = JAXBContext.newInstance(new Class[] { Export4DJ.class });
+        jc = JAXBContext.newInstance(new Class[] { Export4DJ.class });
         Marshaller m = jc.createMarshaller();
         m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, new Boolean(true));
         m.marshal(export4DJ, new FileOutputStream(new File(args[0].replace(".csv", "") + ".export4dj.xml")));
