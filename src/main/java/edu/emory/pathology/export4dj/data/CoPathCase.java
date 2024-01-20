@@ -188,8 +188,13 @@ public class CoPathCase {
     @XmlElementWrapper(name = "pathNetResults")
     @XmlElement(name = "pathNetResult")
     public List<PathNetResult> pathNetResults;
+    @XmlElementWrapper(name = "vitals")
+    @XmlElement(name = "vital")
+    public List<Vital> vitals;
     @XmlTransient
     private Map<String, PathNetResult> pathNetResultMap;
+    @XmlTransient
+    private Map<String, Vital> vitalMap;
     public SebiaCase sebiaCaseSerum;
     public SebiaCase sebiaCaseSerumGelControl;
     public SebiaCase sebiaCaseUrine;
@@ -302,6 +307,14 @@ public class CoPathCase {
                 String.format("rslt%02d-interp", x)
             ));
         }
+        for(int x = 1; x <= 3; x++) {
+            sb.append(String.format(",\"%s\",\"%s\",\"%s\",\"%s\"",
+                String.format("vital%02d-resultName", x),
+                String.format("vital%02d-collectionDateDelta", x),
+                String.format("vital%02d-value", x),
+                String.format("vital%02d-uom", x)
+            ));
+        }
         sb.append(String.format(",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
           "sebiaSerumCurve",
           "sebiaSerumFractions",
@@ -369,6 +382,16 @@ public class CoPathCase {
                 pathNetResult.interp == null ? "" : pathNetResult.interp.replace("\"", "'")
             ));
         }
+        if(vitals != null) {
+            for(Vital vital : vitals) {
+                sb.append(String.format(",\"%s\",\"%s\",\"%s\",\"%s\"",
+                    vital.resultName.replace("\"", "'"),
+                    vital.recordedDateDelta == null ? "" : vital.recordedDateDelta.toString(),
+                    vital.value == null ? "" : vital.value.replace("\"", "'"),
+                    vital.uom == null ? "" : vital.uom.replace("\"", "'")
+                ));
+            }
+        }
         sb.append(String.format(",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
           sebiaCaseSerum == null ? "" : sebiaCaseSerum.curve,
           sebiaCaseSerum == null || sebiaCaseSerum.sebiaFractions == null ? "" : sebiaCaseSerum.sebiaFractions,
@@ -431,6 +454,17 @@ public class CoPathCase {
             }
         }
         return pathNetResultMap;
+    }
+
+    @XmlTransient
+    public Map<String, Vital> getVitalMap() {
+        if(vitalMap == null) {
+            vitalMap = new HashMap<>();
+            for(Vital vital : vitals) {
+                vitalMap.put(vital.resultName, vital);
+            }
+        }
+        return vitalMap;
     }
 
     @XmlAttribute
