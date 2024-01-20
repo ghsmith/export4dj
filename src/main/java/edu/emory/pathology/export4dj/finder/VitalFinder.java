@@ -51,6 +51,11 @@ public class VitalFinder {
 " 5571\n" +
 ",5578\n" +
 ",5557\n" +
+",5568\n" +
+",5541\n" +
+",5584\n" +
+",5581\n" +
+",35851\n" +
 "          )\n" +
 "      ) lsrt on (lsrt.structured_result_type_key = fsn.structured_result_type_key)\n" +
 "    where\n" +
@@ -68,7 +73,7 @@ public class VitalFinder {
 "  trunc(fsn.recorded_dt) - ? recorded_days_delta\n" +
 "from\n" +
 "  ehcvw.lkp_structured_result_type lsrt\n" +
-"  left outer join ehcvw.fact_structured_note fsn on(fsn.structured_result_type_key = lsrt.structured_result_type_key and fsn.structured_note_key in(?, ?, ?))\n" +
+"  left outer join ehcvw.fact_structured_note fsn on(fsn.structured_result_type_key = lsrt.structured_result_type_key and fsn.structured_note_key in(?, ?, ?, ?, ?, ?, ?, ?))\n" +
 "  left outer join ehcvw.lkp_unit_measure lum on (lum.unit_measure_key = fsn.unit_measure_key)\n" +
 "where\n" +
 "  lsrt.structured_result_type_key in\n" +
@@ -76,17 +81,27 @@ public class VitalFinder {
 " 5571\n" +
 ",5578\n" +
 ",5557\n" +
+",5568\n" +
+",5541\n" +
+",5584\n" +
+",5581\n" +
+",35851\n" +
 "  )\n" +
 "order by\n" +
 "  decode\n" +
 "  (\n" +
 "    lsrt.structured_result_type_desc\n" +
-",'Weight in Pounds'                 ,  1\n" +
-",'Height in Inches'                 ,  2\n" +
-",'Body Mass Index'                  ,  3\n" +
+",'Height in Inches'                 ,  1\n" +
+",'Calculated Height in Inches'      ,  2\n" +
+",'Height in cm'                     ,  3\n" +
+",'Calculated Height in cm'          ,  4\n" +
+",'Weight in Pounds'                 ,  5\n" +
+",'Weight in kg'                     ,  6\n" +
+",'Calculated Weight in Kg'          ,  7\n" +
+",'Body Mass Index'                  ,  8\n" +
 "  )"
         );
-        
+
     }
 
     public List<Vital> getVitalsByEmpiProximateToCollectionDate(String empi, Date collectionDate) {
@@ -102,9 +117,19 @@ public class VitalFinder {
             pstmt2.setLong(2, 0);
             pstmt2.setLong(3, 0);
             pstmt2.setLong(4, 0);
+            pstmt2.setLong(5, 0);
+            pstmt2.setLong(6, 0);
+            pstmt2.setLong(7, 0);
+            pstmt2.setLong(8, 0);
+            pstmt2.setLong(9, 0);
             if(rs1.next()) { pstmt2.setLong(2, rs1.getLong("structured_note_key")); }
             if(rs1.next()) { pstmt2.setLong(3, rs1.getLong("structured_note_key")); }
             if(rs1.next()) { pstmt2.setLong(4, rs1.getLong("structured_note_key")); }
+            if(rs1.next()) { pstmt2.setLong(5, rs1.getLong("structured_note_key")); }
+            if(rs1.next()) { pstmt2.setLong(6, rs1.getLong("structured_note_key")); }
+            if(rs1.next()) { pstmt2.setLong(7, rs1.getLong("structured_note_key")); }
+            if(rs1.next()) { pstmt2.setLong(8, rs1.getLong("structured_note_key")); }
+            if(rs1.next()) { pstmt2.setLong(9, rs1.getLong("structured_note_key")); }
             ResultSet rs2 = pstmt2.executeQuery();
             while(rs2.next()) {
                 vitals.add(new Vital(rs2));

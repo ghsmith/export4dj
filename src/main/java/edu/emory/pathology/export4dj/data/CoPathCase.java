@@ -307,7 +307,7 @@ public class CoPathCase {
                 String.format("rslt%02d-interp", x)
             ));
         }
-        for(int x = 1; x <= 3; x++) {
+        for(int x = 1; x <= 8; x++) {
             sb.append(String.format(",\"%s\",\"%s\",\"%s\",\"%s\"",
                 String.format("vital%02d-resultName", x),
                 String.format("vital%02d-collectionDateDelta", x),
