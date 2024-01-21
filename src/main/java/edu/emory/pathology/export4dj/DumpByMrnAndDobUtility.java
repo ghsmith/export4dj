@@ -26,6 +26,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -68,8 +70,9 @@ public class DumpByMrnAndDobUtility {
         export4DJ.coPathCases = new ArrayList<>();
         
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-        sdf.set2DigitYearStart(sdf.parse("1/1/1900"));
-    
+
+        Pattern p = Pattern.compile("([0-9]+)/([0-9]+)/([0-9]+)");
+        
         BufferedReader mrnReader = new BufferedReader(new FileReader(args[0]));
         //String mrnHeaders = mrnReader.readLine();
         PrintWriter accNoWriter = new PrintWriter(new FileWriter(new File(args[0].replace(".csv", "") + ".export4dj.csv")));
@@ -80,7 +83,21 @@ public class DumpByMrnAndDobUtility {
                 String mrn = mrnReaderLine.split(",")[1];
                 Date dob = null;
                 if(mrnReaderLine.split(",").length >= 3 && mrnReaderLine.split(",")[2] != null && mrnReaderLine.split(",")[2].length() > 0) {
-                    dob = new Date(sdf.parse(mrnReaderLine.split(",")[2]).getTime());
+                    Matcher m = p.matcher(mrnReaderLine.split(",")[2]);
+                    if(m.matches()) {
+                        if(m.group(3).length() == 4) {
+                            dob = new Date(sdf.parse(mrnReaderLine.split(",")[2]).getTime());
+                        }
+                        else if(m.group(3).length() == 2) {
+                            dob = new Date(sdf.parse(m.group(1) + "/" + m.group(2) + "/19" + m.group(3)).getTime());
+                        }
+                        else {
+                            throw new RuntimeException("bad DOB");
+                        }
+                    }
+                    else {
+                        throw new RuntimeException("bad DOB");
+                    }
                 }
                 List<CoPathCase> coPathCases = null;
                 if(dob != null) {
