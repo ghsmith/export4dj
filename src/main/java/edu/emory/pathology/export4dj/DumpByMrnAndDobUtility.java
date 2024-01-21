@@ -79,6 +79,12 @@ public class DumpByMrnAndDobUtility {
             Unmarshaller unmarshaller = jc.createUnmarshaller();
             export4DJ = (Export4DJ)unmarshaller.unmarshal(new FileInputStream("latest_xml_prepped/" + args[0] + ".export4dj.xml"));
             System.out.println(export4DJ.coPathCases.size() + " loaded");
+            // remove any cases that were definitely in-flight at the time of the last crash (not perfect)
+            List<CoPathCase> keep = new ArrayList<CoPathCase>();
+            for(CoPathCase candidateCoPathCase : export4DJ.coPathCases) {
+                if(candidateCoPathCase.searchPtNo != null) { keep.add(candidateCoPathCase); }
+            }
+            export4DJ.coPathCases = keep;
         }
 
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
