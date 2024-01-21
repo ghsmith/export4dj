@@ -6,6 +6,7 @@ import edu.emory.pathology.export4dj.finder.CoPathCaseFinder;
 import edu.emory.pathology.export4dj.finder.DemographicsFinder;
 import edu.emory.pathology.export4dj.finder.PathNetResultFinder;
 import edu.emory.pathology.export4dj.finder.SebiaCaseFinder;
+import edu.emory.pathology.export4dj.finder.VitalFinder;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -58,6 +59,7 @@ public class DumpByMrnAndDobUtility {
         CoPathCaseFinder cpcf = new CoPathCaseFinder(connCoPath);
         PathNetResultFinder pnrf = new PathNetResultFinder(connCdw);
         DemographicsFinder df = new DemographicsFinder(connCdw, connCoPath);
+        VitalFinder vf = new VitalFinder(connCdw);
 
         //SebiaCaseFinder scf = new SebiaCaseFinder(new File(args[1]));
         SebiaCaseFinder scf = null;
@@ -101,6 +103,7 @@ public class DumpByMrnAndDobUtility {
                         coPathCase.searchDateOfDx = new Date(sdf.parse(mrnReaderLine.split(",")[3]).getTime());
                     }
                     coPathCase.demographics = df.getDemographicsByEmpiAndAccNo(coPathCase.empi, coPathCase.accNo);
+                    coPathCase.vitals = vf.getVitalsByEmpiProximateToCollectionDate(coPathCase.empi, coPathCase.collectionDate);
                     accNoWriter.println(coPathCase);
                 }
                 accNoWriter.flush();
