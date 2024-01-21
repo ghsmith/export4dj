@@ -87,8 +87,9 @@ public class DumpByMrnAndDobUtility {
         
         BufferedReader mrnReader = new BufferedReader(new FileReader(args[0]));
         //String mrnHeaders = mrnReader.readLine();
-        PrintWriter accNoWriter = new PrintWriter(new FileWriter(new File(args[0].replace(".csv", "") + ".export4dj.csv")));
-        accNoWriter.println(CoPathCase.toStringHeader());
+        //PrintWriter accNoWriter = new PrintWriter(new FileWriter(new File(args[0].replace(".csv", "") + ".export4dj.csv")));
+        //accNoWriter.println(CoPathCase.toStringHeader());
+        int x = 0;
         try {
             String mrnReaderLine;
             while((mrnReaderLine = mrnReader.readLine()) != null) {
@@ -96,8 +97,8 @@ public class DumpByMrnAndDobUtility {
                 boolean skip = false;
                 for(CoPathCase candidateCoPathCase : export4DJ.coPathCases) {
                     if(candidateCoPathCase.searchPtNo.equals(mrnReaderLine.split(",")[0])) {
-                        accNoWriter.println(candidateCoPathCase);
-                        accNoWriter.flush();
+                        //accNoWriter.println(candidateCoPathCase);
+                        //accNoWriter.flush();
                         skip = true;
                         break;
                     }
@@ -151,10 +152,10 @@ public class DumpByMrnAndDobUtility {
                     System.out.print(".");
                     coPathCase.vitals = vf.getVitalsByEmpiProximateToCollectionDate(coPathCase.empi, coPathCase.collectionDate);
                     System.out.println(".");
-                    accNoWriter.println(coPathCase);
+                    //accNoWriter.println(coPathCase);
                 }
-                accNoWriter.flush();
-                {
+                //accNoWriter.flush();
+                if(++x % 20 == 0) {
                     JAXBContext jc = JAXBContext.newInstance(new Class[] { Export4DJ.class });
                     Marshaller m = jc.createMarshaller();
                     m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, new Boolean(true));
@@ -162,7 +163,7 @@ public class DumpByMrnAndDobUtility {
                 }
             }
             mrnReader.close();
-            accNoWriter.close();
+            //accNoWriter.close();
 
             connCoPath.close();
             connCdw.close();
