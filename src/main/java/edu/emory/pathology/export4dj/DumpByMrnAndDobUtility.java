@@ -107,6 +107,12 @@ public class DumpByMrnAndDobUtility {
                     accNoWriter.println(coPathCase);
                 }
                 accNoWriter.flush();
+                {
+                    JAXBContext jc = JAXBContext.newInstance(new Class[] { Export4DJ.class });
+                    Marshaller m = jc.createMarshaller();
+                    m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, new Boolean(true));
+                    m.marshal(export4DJ, new FileOutputStream(new File(args[0].replace(".csv", "") + ".export4dj.xml")));
+                }
             }
             mrnReader.close();
             accNoWriter.close();
@@ -117,19 +123,21 @@ public class DumpByMrnAndDobUtility {
         catch(Exception e) {
             e.printStackTrace();
         }
-            
-        JAXBContext jc = JAXBContext.newInstance(new Class[] { Export4DJ.class });
-        Marshaller m = jc.createMarshaller();
-        m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, new Boolean(true));
-        m.marshal(export4DJ, new FileOutputStream(new File(args[0].replace(".csv", "") + ".export4dj.xml")));
-        jc.generateSchema(new SchemaOutputResolver() {
-            public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
-                File file = new File(args[0].replace(".csv", "") + ".export4dj.xsd");
-                StreamResult result = new StreamResult(file);
-                result.setSystemId(file.toURI().toURL().toString());
-                return result;
-            }                
-        });
+        
+        {
+            JAXBContext jc = JAXBContext.newInstance(new Class[] { Export4DJ.class });
+            Marshaller m = jc.createMarshaller();
+            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, new Boolean(true));
+            m.marshal(export4DJ, new FileOutputStream(new File(args[0].replace(".csv", "") + ".export4dj.xml")));
+            jc.generateSchema(new SchemaOutputResolver() {
+                public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
+                    File file = new File(args[0].replace(".csv", "") + ".export4dj.xsd");
+                    StreamResult result = new StreamResult(file);
+                    result.setSystemId(file.toURI().toURL().toString());
+                    return result;
+                }                
+            });
+        }
         
     }
     
