@@ -29,7 +29,7 @@ public class CoPathCaseFinder {
         this.conn = conn;
         pstmt0 = conn.prepareStatement(
 " select distinct " +
-"   c_specimen.specnum_formatted, c_specimen_accession_date " +
+"   c_specimen.specnum_formatted, c_specimen.accession_date " +
 " from " +
 "   c_specimen " +
 "   join r_medrec on(r_medrec.patdemog_id = c_specimen.patdemog_id) " +
@@ -42,7 +42,7 @@ public class CoPathCaseFinder {
         );
         pstmt0_noDob = conn.prepareStatement(
 " select distinct " +
-"   c_specimen.specnum_formatted, c_specimen_accession_date " +
+"   c_specimen.specnum_formatted, c_specimen.accession_date " +
 " from " +
 "   c_specimen " +
 "   join r_medrec on(r_medrec.patdemog_id = c_specimen.patdemog_id) " +
