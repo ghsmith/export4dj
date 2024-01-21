@@ -67,7 +67,8 @@ public class DumpByMrnAndDobUtility {
         Export4DJ export4DJ = new Export4DJ();
         export4DJ.coPathCases = new ArrayList<>();
         
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy"); 
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+        sdf.set2DigitYearStart(sdf.parse("1/1/1900"));
     
         BufferedReader mrnReader = new BufferedReader(new FileReader(args[0]));
         //String mrnHeaders = mrnReader.readLine();
