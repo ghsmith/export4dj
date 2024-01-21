@@ -28,8 +28,8 @@ public class CoPathCaseFinder {
     public CoPathCaseFinder(Connection conn) throws SQLException {
         this.conn = conn;
         pstmt0 = conn.prepareStatement(
-" select " +
-"   c_specimen.specnum_formatted " +
+" select distinct " +
+"   c_specimen.specnum_formatted, c_specimen_accession_date " +
 " from " +
 "   c_specimen " +
 "   join r_medrec on(r_medrec.patdemog_id = c_specimen.patdemog_id) " +
@@ -41,8 +41,8 @@ public class CoPathCaseFinder {
 "   c_specimen.accession_date "
         );
         pstmt0_noDob = conn.prepareStatement(
-" select " +
-"   c_specimen.specnum_formatted " +
+" select distinct " +
+"   c_specimen.specnum_formatted, c_specimen_accession_date " +
 " from " +
 "   c_specimen " +
 "   join r_medrec on(r_medrec.patdemog_id = c_specimen.patdemog_id) " +

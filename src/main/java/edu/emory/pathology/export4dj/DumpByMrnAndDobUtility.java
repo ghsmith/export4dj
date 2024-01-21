@@ -90,10 +90,12 @@ public class DumpByMrnAndDobUtility {
                 }
                 export4DJ.coPathCases.addAll(coPathCases);
                 for(CoPathCase coPathCase : coPathCases) {
+                    System.out.print(coPathCase.accNo);
                     coPathCase.searchPtNo = mrnReaderLine.split(",")[0];
                     coPathCase.searchRecordId = mrnReaderLine.split(",")[1];
                     coPathCase.searchDob = dob;
                     pstmtDx.setString(1, coPathCase.fin);
+                    System.out.print(".");
                     ResultSet rsDx = pstmtDx.executeQuery();
                     if(rsDx.next()) {
                         coPathCase.diagnosisCd = rsDx.getString(1);
@@ -102,8 +104,11 @@ public class DumpByMrnAndDobUtility {
                     if(mrnReaderLine.split(",").length >= 4 && mrnReaderLine.split(",")[3] != null && mrnReaderLine.split(",")[3].length() > 0) {
                         coPathCase.searchDateOfDx = new Date(sdf.parse(mrnReaderLine.split(",")[3]).getTime());
                     }
+                    System.out.print(".");
                     coPathCase.demographics = df.getDemographicsByEmpiAndAccNo(coPathCase.empi, coPathCase.accNo);
+                    System.out.print(".");
                     coPathCase.vitals = vf.getVitalsByEmpiProximateToCollectionDate(coPathCase.empi, coPathCase.collectionDate);
+                    System.out.println(".");
                     accNoWriter.println(coPathCase);
                 }
                 accNoWriter.flush();
