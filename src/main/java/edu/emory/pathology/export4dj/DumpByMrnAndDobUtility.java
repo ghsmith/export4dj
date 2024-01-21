@@ -99,7 +99,7 @@ public class DumpByMrnAndDobUtility {
         try {
             String mrnReaderLine;
             while((mrnReaderLine = mrnReader.readLine()) != null) {
-
+                System.out.println(mrnReaderLine);
                 boolean skip = false;
                 for(CoPathCase candidateCoPathCase : export4DJ.coPathCases) {
                     if(candidateCoPathCase.searchPtNo.equals(mrnReaderLine.split(",")[0])) {
@@ -161,11 +161,14 @@ public class DumpByMrnAndDobUtility {
                     //accNoWriter.println(coPathCase);
                 }
                 //accNoWriter.flush();
-                if(++x % 20 == 0) {
-                    JAXBContext jc = JAXBContext.newInstance(new Class[] { Export4DJ.class });
-                    Marshaller m = jc.createMarshaller();
-                    m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, new Boolean(true));
-                    m.marshal(export4DJ, new FileOutputStream(new File(args[0].replace(".csv", "") + ".export4dj.xml")));
+                if(!coPathCases.isEmpty()) {
+                    x++;
+                    if(x % 20 == 0) {
+                        JAXBContext jc = JAXBContext.newInstance(new Class[] { Export4DJ.class });
+                        Marshaller m = jc.createMarshaller();
+                        m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, new Boolean(true));
+                        m.marshal(export4DJ, new FileOutputStream(new File(args[0].replace(".csv", "") + ".export4dj.xml")));
+                    }
                 }
             }
             mrnReader.close();
