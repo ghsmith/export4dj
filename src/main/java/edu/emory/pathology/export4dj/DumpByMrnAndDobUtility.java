@@ -96,10 +96,11 @@ public class DumpByMrnAndDobUtility {
         //PrintWriter accNoWriter = new PrintWriter(new FileWriter(new File(args[0].replace(".csv", "") + ".export4dj.csv")));
         //accNoWriter.println(CoPathCase.toStringHeader());
         int x = 0;
+        int y = 0;
         try {
             String mrnReaderLine;
             while((mrnReaderLine = mrnReader.readLine()) != null) {
-                System.out.println(mrnReaderLine);
+                System.out.println(String.format("[%d] %s", ++y, mrnReaderLine));
                 boolean skip = false;
                 for(CoPathCase candidateCoPathCase : export4DJ.coPathCases) {
                     if(candidateCoPathCase.searchPtNo.equals(mrnReaderLine.split(",")[0])) {
