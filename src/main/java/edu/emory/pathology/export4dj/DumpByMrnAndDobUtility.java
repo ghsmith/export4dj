@@ -100,7 +100,7 @@ public class DumpByMrnAndDobUtility {
         try {
             String mrnReaderLine;
             while((mrnReaderLine = mrnReader.readLine()) != null) {
-                System.out.println(String.format("[%d] %s", ++y, mrnReaderLine));
+                System.out.print(String.format("[%d] %s", ++y, mrnReaderLine));
                 boolean skip = false;
                 for(CoPathCase candidateCoPathCase : export4DJ.coPathCases) {
                     if(candidateCoPathCase.searchPtNo.equals(mrnReaderLine.split(",")[0])) {
@@ -110,7 +110,11 @@ public class DumpByMrnAndDobUtility {
                         break;
                     }
                 }
-                if(skip) { continue; }
+                if(skip) { 
+                    System.out.println(" already found");
+                    continue;
+                }
+                System.out.println();
 
                 String mrn = mrnReaderLine.split(",")[1];
                 Date dob = null;
@@ -177,24 +181,25 @@ public class DumpByMrnAndDobUtility {
 
             connCoPath.close();
             connCdw.close();
+
+            {
+                JAXBContext jc = JAXBContext.newInstance(new Class[] { Export4DJ.class });
+                Marshaller m = jc.createMarshaller();
+                m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, new Boolean(true));
+                m.marshal(export4DJ, new FileOutputStream(new File(args[0].replace(".csv", "") + ".export4dj.xml")));
+                jc.generateSchema(new SchemaOutputResolver() {
+                    public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
+                        File file = new File(args[0].replace(".csv", "") + ".export4dj.xsd");
+                        StreamResult result = new StreamResult(file);
+                        result.setSystemId(file.toURI().toURL().toString());
+                        return result;
+                    }                
+                });
+            }
+
         }
         catch(Exception e) {
             e.printStackTrace();
-        }
-        
-        {
-            JAXBContext jc = JAXBContext.newInstance(new Class[] { Export4DJ.class });
-            Marshaller m = jc.createMarshaller();
-            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, new Boolean(true));
-            m.marshal(export4DJ, new FileOutputStream(new File(args[0].replace(".csv", "") + ".export4dj.xml")));
-            jc.generateSchema(new SchemaOutputResolver() {
-                public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
-                    File file = new File(args[0].replace(".csv", "") + ".export4dj.xsd");
-                    StreamResult result = new StreamResult(file);
-                    result.setSystemId(file.toURI().toURL().toString());
-                    return result;
-                }                
-            });
         }
         
     }
