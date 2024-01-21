@@ -9,6 +9,7 @@ import edu.emory.pathology.export4dj.finder.SebiaCaseFinder;
 import edu.emory.pathology.export4dj.finder.VitalFinder;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -32,6 +33,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.SchemaOutputResolver;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 
@@ -66,9 +68,19 @@ public class DumpByMrnAndDobUtility {
         //SebiaCaseFinder scf = new SebiaCaseFinder(new File(args[1]));
         SebiaCaseFinder scf = null;
         
-        Export4DJ export4DJ = new Export4DJ();
-        export4DJ.coPathCases = new ArrayList<>();
+        // new
+        //Export4DJ export4DJ = new Export4DJ();
+        //export4DJ.coPathCases = new ArrayList<>();
         
+        //pickup where we left off
+        Export4DJ export4DJ = null;
+        {
+            JAXBContext jc = JAXBContext.newInstance(new Class[] { Export4DJ.class });
+            Unmarshaller unmarshaller = jc.createUnmarshaller();
+            export4DJ = (Export4DJ)unmarshaller.unmarshal(new FileInputStream("latest_xml_prepped/" + args[0] + ".export4dj.xml"));
+            System.out.println(export4DJ.coPathCases.size() + " loaded");
+        }
+
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
 
         Pattern p = Pattern.compile("([0-9]+)/([0-9]+)/([0-9]+)");
@@ -80,6 +92,18 @@ public class DumpByMrnAndDobUtility {
         try {
             String mrnReaderLine;
             while((mrnReaderLine = mrnReader.readLine()) != null) {
+
+                boolean skip = false;
+                for(CoPathCase candidateCoPathCase : export4DJ.coPathCases) {
+                    if(candidateCoPathCase.searchPtNo.equals(mrnReaderLine.split(",")[0])) {
+                        accNoWriter.println(candidateCoPathCase);
+                        accNoWriter.flush();
+                        skip = true;
+                        break;
+                    }
+                }
+                if(skip) { continue; }
+
                 String mrn = mrnReaderLine.split(",")[1];
                 Date dob = null;
                 if(mrnReaderLine.split(",").length >= 3 && mrnReaderLine.split(",")[2] != null && mrnReaderLine.split(",")[2].length() > 0) {
