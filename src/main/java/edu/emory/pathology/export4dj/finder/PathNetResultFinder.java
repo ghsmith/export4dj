@@ -109,7 +109,7 @@ public class PathNetResultFinder {
           + "  lum.unit_measure_desc result_uom,                                                                                                                                    "
           + "  lri.result_interpretation_desc result_flag,                                                                                                                          "
           + "  trunc(frl.specimen_collect_dt) - ? collection_days_delta,                                                                                                            "
-          + "  (select listagg(event_document_abstract_txt, ';') within group (order by order_key) from ehcvw.fact_event_document where order_key = frl.order_key) result_narrative "
+          + "  (select listagg(event_document_abstract_txt, ';' on overflow truncate) within group (order by order_key) from ehcvw.fact_event_document where order_key = frl.order_key) result_narrative "
           + "from                                                                                                                                                                   "
           + "  (                                                                                                                                                                    "
           + "    select                                                                                                                                                             "
